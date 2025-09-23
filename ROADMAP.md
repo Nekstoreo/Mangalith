@@ -7,7 +7,7 @@
 
 **Backend**: Node.js con NestJS y TypeScript para desarrollo type-safe, middleware de autenticación y autorización, validación de datos robusta y arquitectura API REST escalable.
 
-**Base de Datos**: Sistema de base de datos relacional PostgreSQL con ORM moderno Prisma para mapeo objeto-relacional, migraciones automáticas de esquema, consultas type-safe y pooling de conexiones optimizado.
+**Base de Datos**: Sistema de base de datos relacional PostgreSQL con TypeORM para mapeo objeto-relacional, migraciones automáticas de esquema, consultas type-safe y pooling de conexiones optimizado.
 
 **Infraestructura**: Containerización con Docker para despliegues consistentes, variables de entorno configurables, almacenamiento de archivos eficiente y logs estructurados.
 
