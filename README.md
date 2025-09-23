@@ -26,8 +26,11 @@
   - [📑 Tabla de Contenidos](#-tabla-de-contenidos)
   - [🌟 Visión del Proyecto](#-visión-del-proyecto)
   - [🎯 Filosofía](#-filosofía)
-  - [📦 Instalación](#-instalación)
+  - [🚀 Inicio Rápido](#-inicio-rápido)
+  - [⚙️ Configuración de Entorno](#️-configuración-de-entorno)
+    - [Variables de Entorno](#variables-de-entorno)
   - [🤝 Contribuciones](#-contribuciones)
+  - [🛠️ Arquitectura](#️-arquitectura)
   - [📄 Licencia](#-licencia)
 
 ## 🌟 Visión del Proyecto
@@ -80,28 +83,50 @@
 </table>
 
 
-## 📦 Instalación
-
-
+## 🚀 Inicio Rápido
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/mangalith.git
-cd mangalith
+git clone https://github.com/Nekstoreo/Mangalith.git
+cd Mangalith
 
-# Iniciar con Docker Compose
+# Configurar variables de entorno
+cp .env.example .env
+
+# Iniciar base de datos
 docker-compose up -d
 
-# Iniciar el frontend
-cd frontend
+# Instalar dependencias y configurar
+pnpm setup
+
+# Iniciar desarrollo
 pnpm dev
 
-# Iniciar el backend
-cd backend
-pnpm dev
-
-# 🚀 Acceder a la aplicación en http://localhost:3000
+# 🌐 Frontend: http://localhost:3000
+# 🔧 Backend: http://localhost:3001
 ```
+
+## ⚙️ Configuración de Entorno
+
+### Variables de Entorno
+
+Copia el archivo de ejemplo y configura las variables según tu ambiente:
+
+```bash
+# Desarrollo
+cp .env.example .env
+
+# Producción
+cp .env.example .env.production
+```
+
+**Variables requeridas:**
+- `POSTGRES_DB`: Nombre de la base de datos
+- `POSTGRES_USER`: Usuario de PostgreSQL
+- `POSTGRES_PASSWORD`: Contraseña de PostgreSQL
+- `API_PORT`: Puerto del backend (por defecto: 3001)
+- `JWT_SECRET`: Clave secreta para JWT (cambiar en producción)
+- `NEXT_PUBLIC_API_URL`: URL de la API para el frontend
 
 ## 🤝 Contribuciones
 
@@ -122,6 +147,13 @@ pnpm dev
 5. 🔄 Abre un Pull Request
 
 Lee nuestras [Guías de Contribución](CONTRIBUTING.md) para más detalles.
+
+## 🛠️ Arquitectura
+
+- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS
+- **Backend**: Node.js 22 + Express + TypeScript + Prisma
+- **Base de Datos**: PostgreSQL con migraciones automáticas
+- **Despliegue**: Docker (solo BD) + pnpm
 
 ## 📄 Licencia
 
