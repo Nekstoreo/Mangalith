@@ -3,13 +3,13 @@
 
 ### Pila Tecnológica General
 
-**Frontend**: Framework React moderno con TypeScript para tipado estático y componentes reutilizables, sistema de enrutado dinámico, gestor de estado global, biblioteca de componentes UI consistente y herramientas de construcción optimizadas.
+**Frontend**: Next.js moderno con TypeScript para tipado estático y componentes reutilizables, sistema de enrutado dinámico con App Router, gestor de estado global con Zustand, biblioteca de componentes UI consistente con shadcn/ui y herramientas de construcción optimizadas con Turbopack.
 
-**Backend**: Runtime JavaScript del servidor con framework web minimalista, TypeScript para desarrollo type-safe, middleware de autenticación y autorización, validación de datos robusta y arquitectura API REST escalable.
+**Backend**: Node.js con Express y TypeScript para desarrollo type-safe, middleware de autenticación y autorización, validación de datos robusta y arquitectura API REST escalable.
 
-**Base de Datos**: Sistema de base de datos relacional PostgreSQL con ORM moderno para mapeo objeto-relacional, migraciones automáticas de esquema, consultas type-safe y pooling de conexiones optimizado.
+**Base de Datos**: Sistema de base de datos relacional PostgreSQL con ORM moderno Prisma para mapeo objeto-relacional, migraciones automáticas de esquema, consultas type-safe y pooling de conexiones optimizado.
 
-**Infraestructura**: Containerización con Docker para despliegues consistentes, orquestación de servicios, variables de entorno configurables, almacenamiento de archivos eficiente y logs estructurados.
+**Infraestructura**: Containerización con Docker para despliegues consistentes, variables de entorno configurables, almacenamiento de archivos eficiente y logs estructurados.
 
 ---
 
@@ -17,7 +17,7 @@
 
 ### 1. Establecer la estructura base del proyecto
 
-- [ ] Crear la arquitectura monorepo con separación clara entre frontend y backend. Configurar TypeScript estricto en ambas capas con reglas de linting consistentes. Establecer scripts de desarrollo automatizados que permitan levantar todo el stack con un solo comando. Inicializar el control de versiones con estructura de branches para desarrollo, staging y producción. Configurar variables de entorno diferenciadas por ambiente (desarrollo, testing, producción) con validación automática. Establecer convenciones de nomenclatura para archivos, funciones y componentes. Crear documentación básica de setup y contribución. Esta base sólida permitirá que múltiples desarrolladores trabajen eficientemente sin conflictos de configuración y garantizará coherencia en todo el codebase.
+- [ ] Crear la arquitectura del repositorio inicial, con separación clara entre frontend y backend. Establecer scripts de desarrollo automatizados que permitan levantar todo el stack con un solo comando. Inicializar si no lo está, el control de versiones con estructura de branches para desarrollo, staging y producción. Configurar variables de entorno diferenciadas por ambiente (desarrollo, testing, producción) con validación automática. Crear documentación básica de setup y contribución. Esta base sólida permitirá que múltiples desarrolladores trabajen eficientemente sin conflictos de configuración y garantizará coherencia en todo el codebase.
 
 ### 2. Implementar el servidor backend básico
 
