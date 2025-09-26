@@ -35,9 +35,9 @@
 
 ## Fase 2: Gestión de Archivos
 
-### 5. Implementar el sistema de subida de archivos
+### 5. Implementar el sistema básico de subida de archivos
 
-- [ ] Desarrollar el endpoint de subida de archivos con validación estricta de tipos permitidos (CBZ, CBR, ZIP) y límites de tamaño configurables. Configurar el almacenamiento de archivos en el filesystem local con estructura organizativa por usuario y serie. Implementar validación de integridad de archivos comprimidos antes de aceptar la subida. Crear sistema de limpieza automática de archivos temporales y uploads fallidos. Establecer progress tracking para subidas grandes con feedback en tiempo real al usuario. Configurar compresión y optimización automática de archivos cuando sea necesario. Implementar sistema de quarantine para archivos sospechosos o corruptos. Crear logs detallados de todas las operaciones de archivo para debugging y auditoria. Este sistema será la base para toda la gestión de contenido manga en la plataforma.
+- [X] Desarrollar el endpoint básico de subida de archivos con validación de tipos permitidos (CBZ, CBR, ZIP) y límites de tamaño configurables. Configurar el almacenamiento de archivos en el filesystem local con estructura organizativa simple por usuario. Implementar validación básica de formato de archivos comprimidos antes de aceptar la subida. Establecer sistema de logging básico para operaciones de archivo y errores comunes. Crear respuestas apropiadas de error y éxito para la interfaz de usuario. Implementar cleanup básico de archivos temporales al finalizar la subida. Este sistema proporcionará la funcionalidad core de upload necesaria para las siguientes fases del desarrollo.
 
 ### 6. Crear el procesador de archivos manga
 
@@ -87,15 +87,25 @@
 
 ## Fase 5: Optimización y Escalabilidad
 
-### 15. Implementar caché y optimización de rendimiento
+### 15. Implementar sistema avanzado de gestión de archivos
+
+- [ ] Desarrollar sistema de progress tracking para subidas grandes con feedback en tiempo real al usuario y capacidad de pausa/reanudación. Implementar compresión y optimización automática de archivos con detección de formato óptimo según el contenido. Crear sistema de quarantine robusto para archivos sospechosos o corruptos con análisis automático de integridad. Establecer sistema de limpieza automática inteligente de archivos temporales, uploads fallidos y archivos huérfanos. Implementar validación de integridad avanzada con checksums y verificación de contenido profundo. Desarrollar sistema de replicación y redundancia de archivos críticos para alta disponibilidad. Crear herramientas de migración y reorganización automática de estructura de archivos. Establecer políticas de retención automática con archivado y eliminación programada. Este sistema garantizará manejo robusto y eficiente de grandes volúmenes de archivos.
+
+### 16. Implementar caché y optimización de rendimiento
+
+### 16. Implementar caché y optimización de rendimiento
 
 - [ ] Desarrollar sistema de caché multicapa que incluya caché de archivos estáticos, metadatos frecuentemente accedidos y queries de base de datos costosas. Implementar CDN interno para servir imágenes optimizadas con compresión automática y formato adaptativo según el cliente. Crear sistema de precarga inteligente que anticipe necesidades del usuario basándose en patrones de navegación. Establecer lazy loading avanzado para todos los componentes pesados con placeholders apropiados. Implementar compresión gzip/brotli para todas las respuestas del servidor reduciendo tiempo de transferencia. Crear sistema de optimización de imágenes automático que genere múltiples tamaños y formatos para diferentes contextos. Desarrollar caching estratégico del lado cliente con invalidación inteligente. Establecer métricas de rendimiento con monitoring continuo para identificar cuellos de botella. Estas optimizaciones garantizarán experiencia fluida incluso con grandes bibliotecas.
 
-### 16. Establecer monitoring y logging avanzado
+### 17. Establecer monitoring y logging avanzado
+
+### 17. Establecer monitoring y logging avanzado
 
 - [ ] Implementar logging estructurado con niveles apropiados (error, warn, info, debug) y contexto enriquecido para debugging eficiente. Crear sistema de métricas de aplicación que trackee performance, uso de recursos, errores y patrones de usuario. Establecer dashboards de monitoring en tiempo real con alertas automáticas para problemas críticos del sistema. Desarrollar sistema de health checks para todos los servicios con endpoints específicos para monitoring externo. Implementar error tracking con stack traces detallados, contexto de usuario y reproducibilidad de bugs. Crear analytics de uso que proporcionen insights sobre patrones de lectura, contenido popular y comportamiento de usuarios. Establecer logging de auditoría para operaciones críticas como uploads, eliminaciones y cambios de configuración. Desarrollar sistema de reports automáticos con métricas clave de salud del sistema. Este monitoring será crucial para mantener la calidad del servicio.
 
-### 17. Crear sistema de respaldos automatizados
+### 18. Crear sistema de respaldos automatizados
+
+### 18. Crear sistema de respaldos automatizados
 
 - [ ] Desarrollar estrategia de backup automatizada que incluya base de datos, archivos de usuario y configuraciones del sistema. Implementar respaldos incrementales diarios con retención configurable para optimizar espacio de almacenamiento. Crear sistema de verificación de integridad de backups con testing automático de restauración. Establecer múltiples destinos de backup (local, cloud) para redundancia geográfica y protección contra desastres. Implementar compresión y encriptación de backups para seguridad y eficiencia de almacenamiento. Crear herramientas de restauración granular que permitan recovery selectivo de datos específicos. Desarrollar documentación detallada de procedimientos de disaster recovery con tiempos de recuperación estimados. Establecer alertas automáticas por fallos en procesos de backup con escalation apropiado. Este sistema protegerá todo el contenido y configuración de usuarios.
 
@@ -103,15 +113,17 @@
 
 ## Fase 6: Preparación para Producción
 
-### 18. Implementar configuración de deployment
+### 19. Implementar configuración de deployment
 
 - [ ] Crear configuración Docker optimizada para producción con multi-stage builds que minimicen tamaño final de imágenes. Desarrollar docker-compose completo que incluya todos los servicios necesarios con configuración de networking apropiada. Establecer configuración de reverse proxy con SSL/TLS automático, rate limiting y protección básica contra ataques. Implementar scripts de deployment automatizado con rollback capabilities y zero-downtime deployments. Crear configuración de variables de entorno para diferentes ambientes con validación y documentación. Establecer configuración de logs centralizados con rotación automática y archivado a largo plazo. Desarrollar healthchecks comprehensivos para todos los servicios con timeouts apropiados. Crear documentación detallada de deployment con troubleshooting común y mejores prácticas. Esta configuración permitirá deployments confiables y mantenibles.
 
-### 19. Establecer sistema de configuración y personalización
+### 20. Establecer sistema de configuración y personalización
 
 - [ ] Desarrollar panel de administración intuitivo para configuración general del sistema sin necesidad de editar código. Implementar sistema de temas personalizable que permita cambiar colores, tipografías y layouts sin desarrollo adicional. Crear configuración de branding completa incluyendo logos, favicon, nombre de la aplicación y metadatos. Establecer configuraciones de funcionalidad que permitan habilitar/deshabilitar features específicas según necesidades. Implementar configuración de límites del sistema como tamaño máximo de archivos, número de usuarios, espacio de almacenamiento. Crear sistema de configuración de notificaciones y emails con templates personalizables. Desarrollar importador/exportador de configuraciones para migración entre instancias. Establecer validación robusta de configuraciones con rollback automático en caso de configuraciones inválidas. Este sistema permitirá personalización completa sin conocimientos técnicos.
 
-### 20. Desarrollar documentación completa y guías de usuario
+### 21. Desarrollar documentación completa y guías de usuario
+
+### 21. Desarrollar documentación completa y guías de usuario
 
 - [ ] Crear documentación técnica comprehensiva que incluya arquitectura, APIs, configuración y troubleshooting para desarrolladores. Desarrollar guías de usuario paso a paso con screenshots y videos para todas las funcionalidades principales. Establecer documentación de deployment con múltiples escenarios (desarrollo, staging, producción) y diferentes proveedores de hosting. Implementar sistema de documentación versionada que se mantenga sincronizada con releases del código. Crear FAQs basadas en problemas comunes y sus soluciones con ejemplos prácticos. Desarrollar guías de contribución para la comunidad incluyendo coding standards, process de pull requests y roadmap. Establecer documentación de API con ejemplos interactivos y casos de uso comunes. Crear tutoriales de personalización y extensión para usuarios avanzados que quieran modificar la aplicación. Esta documentación será esencial para adopción y contribución comunitaria.
 
