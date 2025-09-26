@@ -28,4 +28,7 @@ export class UploadResponseDto {
   path: string;
   status: string;
   createdAt: Date;
+  metadata?: unknown;
+  pages?: unknown;
+  thumbnails?: Record<number, string>;
 }
