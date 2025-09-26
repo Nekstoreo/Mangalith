@@ -27,6 +27,14 @@ export interface AppConfig {
     destination?: string;
     maxFileSize?: number;
   };
+  processing: {
+    tempDir: string;
+    cacheDir: string;
+    thumbnailsDir: string;
+    concurrency: number;
+    thumbnailSizes: number[];
+    supportedImageFormats: string[];
+  };
 }
 
 export default (): AppConfig => ({
@@ -61,5 +69,22 @@ export default (): AppConfig => ({
   uploads: {
     destination: process.env.UPLOAD_DESTINATION || './storage/uploads',
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '104857600', 10), // 100MB
+  },
+  processing: {
+    tempDir: process.env.PROCESSING_TEMP_DIR || './storage/temp',
+    cacheDir:
+      process.env.PROCESSING_CACHE_DIR || './storage/cache/processing',
+    thumbnailsDir:
+      process.env.PROCESSING_THUMBNAILS_DIR || './storage/thumbnails',
+    concurrency: parseInt(process.env.PROCESSING_CONCURRENCY || '2', 10),
+    thumbnailSizes: (process.env.PROCESSING_THUMBNAIL_SIZES || '128,256,512')
+      .split(',')
+      .map((value) => parseInt(value.trim(), 10))
+      .filter((value) => Number.isFinite(value) && value > 0),
+    supportedImageFormats: (process.env.SUPPORTED_IMAGE_FORMATS ||
+      'jpg,jpeg,png,webp')
+      .split(',')
+      .map((value) => value.trim().toLowerCase())
+      .filter((value) => Boolean(value)),
   },
 });

@@ -45,6 +45,14 @@ export const validationSchema = Joi.object({
   UPLOAD_DESTINATION: Joi.string().default('./storage/uploads'),
   MAX_FILE_SIZE: Joi.number().default(104857600), // 100MB
 
+  // Configuración del procesador de manga
+  PROCESSING_TEMP_DIR: Joi.string().default('./storage/temp'),
+  PROCESSING_CACHE_DIR: Joi.string().default('./storage/cache/processing'),
+  PROCESSING_THUMBNAILS_DIR: Joi.string().default('./storage/thumbnails'),
+  PROCESSING_CONCURRENCY: Joi.number().integer().min(1).default(2),
+  PROCESSING_THUMBNAIL_SIZES: Joi.string().default('128,256,512'),
+  SUPPORTED_IMAGE_FORMATS: Joi.string().default('jpg,jpeg,png,webp'),
+
   // Configuración de PostgreSQL desde docker-compose
   POSTGRES_DB: Joi.string().default('mangalith_dev'),
   POSTGRES_USER: Joi.string().default('mangalith_user'),

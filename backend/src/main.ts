@@ -17,6 +17,9 @@ async function bootstrap() {
     logger,
   });
 
+  // Global prefix for API routes
+  app.setGlobalPrefix('api');
+
   // Global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());
 
@@ -56,7 +59,7 @@ async function bootstrap() {
 
   await app.listen(config.port);
   logger.log(
-    `Application is running on: http://localhost:${config.port}`,
+    `Application is running on: http://localhost:${config.port}/api`,
     'Bootstrap',
   );
 }
