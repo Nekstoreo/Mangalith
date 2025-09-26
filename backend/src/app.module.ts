@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { LoggerModule } from '@/common/logger.module';
 import { UploadsModule } from '@/uploads/uploads.module';
 import { configuration, validationSchema } from '@/config';
+import { MangaProcessingModule } from '@/processing/manga-processing.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { configuration, validationSchema } from '@/config';
     }),
     LoggerModule,
     UploadsModule,
+    MangaProcessingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,6 +7,7 @@ import { File, FileType, FileFormat, FileStatus } from '@/file/entities/file.ent
 import { UploadFileDto, UploadResponseDto } from './dto/upload-file.dto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { ArchiveProcessorService } from '@/processing/services/archive-processor.service';
 
 @Injectable()
 export class UploadsService {
@@ -25,6 +26,7 @@ export class UploadsService {
     private readonly fileRepository: Repository<File>,
     private readonly configService: ConfigService,
     private readonly logger: WinstonLoggerService,
+    private readonly archiveProcessor: ArchiveProcessorService,
   ) {
   this.uploadPath = this.configService.get('uploads.destination') || './storage/uploads';
     this.maxFileSize = this.configService.get('uploads.maxFileSize') || 104857600; // 100MB
@@ -92,6 +94,12 @@ export class UploadsService {
         'UploadsService',
       );
 
+      const processingResult = await this.archiveProcessor.process(savedFile);
+
+      savedFile.status = FileStatus.PROCESSED;
+      savedFile.processedAt = new Date();
+      await this.fileRepository.save(savedFile);
+
       return {
         id: savedFile.id,
         filename: savedFile.filename,
@@ -101,6 +109,9 @@ export class UploadsService {
         path: savedFile.path,
         status: savedFile.status,
         createdAt: savedFile.createdAt,
+        metadata: processingResult.metadata,
+        pages: processingResult.pages,
+        thumbnails: processingResult.thumbnailPaths,
       };
     } catch (error) {
       this.logger.error(
