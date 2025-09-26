@@ -30,7 +30,7 @@ export interface AppConfig {
 }
 
 export default (): AppConfig => ({
-  port: parseInt(process.env.PORT || '3000', 10),
+  port: parseInt(process.env.API_PORT || '3001', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
   jwt: {
     secret: process.env.JWT_SECRET || 'fallback-secret-change-in-production',
@@ -59,7 +59,7 @@ export default (): AppConfig => ({
     url: process.env.DATABASE_URL,
   },
   uploads: {
-    destination: process.env.UPLOAD_DESTINATION,
+    destination: process.env.UPLOAD_DESTINATION || './storage/uploads',
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '104857600', 10), // 100MB
   },
 });

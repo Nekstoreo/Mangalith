@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 
 export const validationSchema = Joi.object({
   // Puerto del servidor
-  PORT: Joi.number().default(3000),
+  API_PORT: Joi.number().default(3001),
 
   // Ambiente
   NODE_ENV: Joi.string()
@@ -42,7 +42,7 @@ export const validationSchema = Joi.object({
   DATABASE_URL: Joi.string().required(),
 
   // Configuración de archivos
-  UPLOAD_DESTINATION: Joi.string().default('./uploads'),
+  UPLOAD_DESTINATION: Joi.string().default('./storage/uploads'),
   MAX_FILE_SIZE: Joi.number().default(104857600), // 100MB
 
   // Configuración de PostgreSQL desde docker-compose
