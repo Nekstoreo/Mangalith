@@ -10,7 +10,7 @@
     "install:all": "pnpm install",
     "install:frontend": "cd frontend && pnpm install",
     "install:backend": "cd backend && pnpm install",
-    "setup": "pnpm run validate:env && pnpm install:all && pnpm run setup:db",
+    "setup": "pnpm run validate:env && pnpm install:all",
     "validate:env": "node -e \"require('dotenv').config(); const required = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'JWT_SECRET']; const missing = required.filter(key => !process.env[key]); if(missing.length) { console.error('❌ Variables de entorno faltantes:', missing.join(', ')); process.exit(1); } else { console.log('✅ Variables de entorno validadas'); }\"",
     "setup:db": "cd backend && pnpm prisma migrate dev --name init",
     "db:migrate": "cd backend && pnpm prisma migrate dev",
@@ -27,7 +27,7 @@
     "nodejs",
     "express",
     "postgresql",
-    "prisma",
+    "typeorm",
     "docker"
   ],
   "author": "Mangalith Team",
