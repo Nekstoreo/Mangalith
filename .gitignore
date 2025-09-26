@@ -82,3 +82,6 @@ public/uploads/
 # Temporary files
 tmp/
 temp/
+
+# Cursor
+.cursor/
