@@ -13,8 +13,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadsService } from './uploads.service';
-import { UploadFileDto, UploadResponseDto } from './dto/upload-file.dto';
+import { UploadsService } from '@/uploads/uploads.service';
+import { UploadFileDto, UploadResponseDto } from '@/uploads/dto/upload-file.dto';
 import { WinstonLoggerService } from '@/common/logger.service';
 
 // TODO: Implementar guards de autenticación cuando estén disponibles

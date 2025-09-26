@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from '@/common/logger.module';
-import { ArchiveProcessorService } from './services/archive-processor.service';
+import { ArchiveProcessorService } from '@/processing/services/archive-processor.service';
 
 @Module({
   imports: [ConfigModule, LoggerModule],

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from '@/app.controller';
+import { AppService } from '@/app.service';
 import { LoggerModule } from '@/common/logger.module';
 import { UploadsModule } from '@/uploads/uploads.module';
 import { configuration, validationSchema } from '@/config';

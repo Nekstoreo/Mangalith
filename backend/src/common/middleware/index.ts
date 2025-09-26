@@ -1,2 +1,2 @@
-export * from './security.middleware';
-export * from './rate-limit.middleware';
+export * from '@/common/middleware/security.middleware';
+export * from '@/common/middleware/rate-limit.middleware';

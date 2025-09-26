@@ -13,7 +13,7 @@ import {
   FileFormat,
   FileStatus,
 } from '@/file/entities/file.entity';
-import { UploadFileDto, UploadResponseDto } from './dto/upload-file.dto';
+import { UploadFileDto, UploadResponseDto } from '@/uploads/dto/upload-file.dto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { ArchiveProcessorService } from '@/processing/services/archive-processor.service';
