@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerModule } from '@/common/logger.module';
+import { UploadsModule } from '@/uploads/uploads.module';
 import { configuration, validationSchema } from '@/config';
 
 @Module({
@@ -43,6 +44,7 @@ import { configuration, validationSchema } from '@/config';
       inject: [ConfigService],
     }),
     LoggerModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
