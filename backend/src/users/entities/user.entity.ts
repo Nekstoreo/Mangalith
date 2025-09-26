@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Manga } from '@/manga/entities/manga.entity';
 
 export enum UserRole {
@@ -31,6 +32,7 @@ export class User {
   username: string;
 
   @Column({ length: 255 })
+  @Exclude()
   password: string;
 
   @Column({
