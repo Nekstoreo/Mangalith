@@ -23,11 +23,8 @@ const publicRoutes = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Get token from cookies or headers
-  const token = request.cookies.get('mangalith-auth-token')?.value ||
-                request.headers.get('authorization')?.replace('Bearer ', '')
-
-  const isAuthenticated = !!token
+  // For now, don't check authentication in middleware since tokens are stored in localStorage
+  // This will be handled by client-side authentication checks
   const isProtectedRoute = protectedRoutes.some(route =>
     pathname.startsWith(route)
   )
@@ -39,32 +36,18 @@ export function middleware(request: NextRequest) {
                         pathname.startsWith('/api/') ||
                         pathname.includes('.')
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthenticated && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  // Redirect unauthenticated users away from protected pages
-  if (!isAuthenticated && isProtectedRoute) {
-    const loginUrl = new URL('/auth/login', request.url)
-    loginUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(loginUrl)
-  }
-
-  // Allow access to public routes and assets
-  if (isPublicRoute || isAuthRoute) {
+  // Allow access to auth routes (login/register) - authentication will be handled client-side
+  if (isAuthRoute) {
     return NextResponse.next()
   }
 
-  // For protected routes, verify token exists (additional validation could be added here)
-  if (isProtectedRoute) {
-    if (!isAuthenticated) {
-      const loginUrl = new URL('/auth/login', request.url)
-      loginUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(loginUrl)
-    }
+  // Allow access to public routes and assets
+  if (isPublicRoute) {
+    return NextResponse.next()
   }
 
+  // For protected routes, we'll let the client handle authentication
+  // This avoids middleware redirect loops when localStorage tokens exist
   return NextResponse.next()
 }
 

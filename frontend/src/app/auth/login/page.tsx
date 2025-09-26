@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
@@ -26,7 +26,14 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/dashboard'
-  const { login } = useAuthStore()
+  const { login, isAuthenticated } = useAuthStore()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push(redirectTo)
+    }
+  }, [isAuthenticated, router, redirectTo])
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -49,6 +56,11 @@ function LoginForm() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Don't render form if already authenticated (will redirect)
+  if (isAuthenticated) {
+    return null
   }
 
   return (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
@@ -24,7 +24,14 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
-  const { login } = useAuthStore()
+  const { login, isAuthenticated } = useAuthStore()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard')
+    }
+  }, [isAuthenticated, router])
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -49,6 +56,11 @@ export default function RegisterPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Don't render form if already authenticated (will redirect)
+  if (isAuthenticated) {
+    return null
   }
 
   return (
