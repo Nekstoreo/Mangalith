@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WinstonLoggerService } from '@/common/logger.service';
 import { File } from '@/file/entities/file.entity';
@@ -6,10 +10,23 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { extractArchiveEntries } from '../utils/archive.utils';
 import { isLikelyCover } from '../utils/file.utils';
-import { ensureImageFormat, inspectImage, createThumbnail } from '../utils/image.utils';
+import {
+  ensureImageFormat,
+  inspectImage,
+  createThumbnail,
+} from '../utils/image.utils';
 import { JsonFileCache } from '../utils/cache.utils';
-import { ArchiveExtractionSummary, ExtractedImageEntry } from '../types/archive-entry.type';
-import { MangaMetadata, PageMetadata, ProcessingContext, ProcessingResult } from '../types/manga-processing.types';
+import {
+  ArchiveExtractionSummary,
+  ExtractedArchiveEntry,
+  ExtractedImageEntry,
+} from '../types/archive-entry.type';
+import {
+  MangaMetadata,
+  PageMetadata,
+  ProcessingContext,
+  ProcessingResult,
+} from '../types/manga-processing.types';
 import pLimit from 'p-limit';
 
 @Injectable()
@@ -31,24 +48,42 @@ export class ArchiveProcessorService {
   async process(file: File): Promise<ProcessingResult> {
     const cached = await this.cache.get(file.id);
     if (cached) {
-      this.logger.debug(`Cache hit para archivo ${file.id}`, 'ArchiveProcessorService');
+      this.logger.debug(
+        `Cache hit para archivo ${file.id}`,
+        'ArchiveProcessorService',
+      );
       return cached;
     }
 
     const tempDir = this.configService.get<string>('processing.tempDir');
-    const thumbnailsDir = this.configService.get<string>('processing.thumbnailsDir');
-    const allowedFormats = this.configService.get<string[]>('processing.supportedImageFormats') ?? [];
-    const thumbnailSizes = this.configService.get<number[]>('processing.thumbnailSizes') ?? [];
-    const concurrency = this.configService.get<number>('processing.concurrency') ?? 2;
+    const thumbnailsDir = this.configService.get<string>(
+      'processing.thumbnailsDir',
+    );
+    const allowedFormats =
+      this.configService.get<string[]>('processing.supportedImageFormats') ??
+      [];
+    const thumbnailSizes =
+      this.configService.get<number[]>('processing.thumbnailSizes') ?? [];
+    const concurrency =
+      this.configService.get<number>('processing.concurrency') ?? 2;
 
-    if (!tempDir || !thumbnailsDir || allowedFormats.length === 0 || thumbnailSizes.length === 0) {
-      throw new InternalServerErrorException('Configuración de procesamiento incompleta');
+    if (
+      !tempDir ||
+      !thumbnailsDir ||
+      allowedFormats.length === 0 ||
+      thumbnailSizes.length === 0
+    ) {
+      throw new InternalServerErrorException(
+        'Configuración de procesamiento incompleta',
+      );
     }
 
     const context: ProcessingContext = {
       file,
       tempDir,
-      cacheDir: this.configService.get('processing.cacheDir'),
+      cacheDir:
+        this.configService.get<string>('processing.cacheDir') ||
+        './storage/cache/processing',
       thumbnailsDir,
       allowedFormats,
       thumbnailSizes,
@@ -64,9 +99,15 @@ export class ArchiveProcessorService {
       throw new BadRequestException('El archivo no contiene imágenes válidas');
     }
 
-    const pages = await this.buildPageMetadata(summary.imageEntries, context, concurrency);
+    const pages = await this.buildPageMetadata(
+      summary.imageEntries,
+      context,
+      concurrency,
+    );
     const metadata = this.inferMetadataFromFilename(file.originalFilename);
-    const cover = summary.coverEntry ? pages.find((page) => page.filename === summary.coverEntry?.entryName) : pages[0];
+    const cover = summary.coverEntry
+      ? pages.find((page) => page.filename === summary.coverEntry?.entryName)
+      : pages[0];
     const thumbnails = await this.generateThumbnails(cover, summary, context);
 
     const result: ProcessingResult = {
@@ -85,8 +126,17 @@ export class ArchiveProcessorService {
     await Promise.all(
       dirs.map((dir) =>
         fs.mkdir(dir, { recursive: true }).catch((error) => {
-          this.logger.error(`No se pudo crear directorio ${dir}: ${(error as Error).message}`, error.stack, 'ArchiveProcessorService');
-          throw new InternalServerErrorException('Error preparando directorios de procesamiento');
+          const errorMessage =
+            error instanceof Error ? error.message : 'Unknown error';
+          const errorStack = error instanceof Error ? error.stack : undefined;
+          this.logger.error(
+            `No se pudo crear directorio ${dir}: ${errorMessage}`,
+            errorStack,
+            'ArchiveProcessorService',
+          );
+          throw new InternalServerErrorException(
+            'Error preparando directorios de procesamiento',
+          );
         }),
       ),
     );
@@ -97,19 +147,25 @@ export class ArchiveProcessorService {
     filename: string,
     context: ProcessingContext,
   ): Promise<ArchiveExtractionSummary> {
-    const entries = await extractArchiveEntries(buffer, filename, context.tempDir);
+    const entries = await extractArchiveEntries(
+      buffer,
+      filename,
+      context.tempDir,
+    );
     const allowedExtensions = context.allowedFormats;
 
     let coverEntry: ExtractedImageEntry | undefined;
     const imageEntries: ExtractedImageEntry[] = [];
-    const skippedEntries = [];
+    const skippedEntries: ExtractedArchiveEntry[] = [];
 
     for (const entry of entries) {
       if (entry.isDirectory) {
         continue;
       }
 
-      if (!(await ensureImageFormat(await entry.getData(), allowedExtensions))) {
+      if (
+        !(await ensureImageFormat(await entry.getData(), allowedExtensions))
+      ) {
         skippedEntries.push(entry);
         continue;
       }
@@ -127,7 +183,7 @@ export class ArchiveProcessorService {
         width: info.width,
         height: info.height,
         format: info.format,
-        getData: async () => data,
+        getData: () => Promise.resolve(data),
       };
 
       if (!coverEntry && isLikelyCover(entry.entryName)) {
@@ -137,7 +193,9 @@ export class ArchiveProcessorService {
       imageEntries.push(imageEntry);
     }
 
-    imageEntries.sort((a, b) => a.entryName.localeCompare(b.entryName, undefined, { numeric: true }));
+    imageEntries.sort((a, b) =>
+      a.entryName.localeCompare(b.entryName, undefined, { numeric: true }),
+    );
 
     if (!coverEntry) {
       coverEntry = imageEntries[0];
@@ -189,7 +247,9 @@ export class ArchiveProcessorService {
           const data = await entry.getData();
           const info = await inspectImage(data);
           if (!info) {
-            throw new BadRequestException(`Imagen inválida: ${entry.entryName}`);
+            throw new BadRequestException(
+              `Imagen inválida: ${entry.entryName}`,
+            );
           }
           return {
             index,
@@ -215,10 +275,14 @@ export class ArchiveProcessorService {
       return {};
     }
 
-    const coverEntry = summary.imageEntries.find((entry) => entry.entryName === cover.filename);
+    const coverEntry = summary.imageEntries.find(
+      (entry) => entry.entryName === cover.filename,
+    );
 
     if (!coverEntry) {
-      throw new InternalServerErrorException('No se encontró la imagen de portada para thumbnails');
+      throw new InternalServerErrorException(
+        'No se encontró la imagen de portada para thumbnails',
+      );
     }
 
     const data = await coverEntry.getData();
@@ -239,5 +303,3 @@ export class ArchiveProcessorService {
     return thumbnails;
   }
 }
-
-

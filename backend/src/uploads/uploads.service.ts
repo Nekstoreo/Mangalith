@@ -1,9 +1,18 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { WinstonLoggerService } from '@/common/logger.service';
-import { File, FileType, FileFormat, FileStatus } from '@/file/entities/file.entity';
+import {
+  File,
+  FileType,
+  FileFormat,
+  FileStatus,
+} from '@/file/entities/file.entity';
 import { UploadFileDto, UploadResponseDto } from './dto/upload-file.dto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -28,9 +37,11 @@ export class UploadsService {
     private readonly logger: WinstonLoggerService,
     private readonly archiveProcessor: ArchiveProcessorService,
   ) {
-  this.uploadPath = this.configService.get('uploads.destination') || './storage/uploads';
-    this.maxFileSize = this.configService.get('uploads.maxFileSize') || 104857600; // 100MB
-    
+    this.uploadPath =
+      this.configService.get('uploads.destination') || './storage/uploads';
+    this.maxFileSize =
+      this.configService.get('uploads.maxFileSize') || 104857600; // 100MB
+
     // Ensure upload directory exists
     this.ensureUploadDirectory();
   }
@@ -40,7 +51,10 @@ export class UploadsService {
       await fs.access(this.uploadPath);
     } catch {
       await fs.mkdir(this.uploadPath, { recursive: true });
-      this.logger.log(`Created upload directory: ${this.uploadPath}`, 'UploadsService');
+      this.logger.log(
+        `Created upload directory: ${this.uploadPath}`,
+        'UploadsService',
+      );
     }
   }
 
@@ -151,7 +165,7 @@ export class UploadsService {
     // Validar extensión
     const fileExt = path.extname(file.originalname).toLowerCase();
     const allowedExtensions = ['.cbz', '.cbr', '.zip', '.rar'];
-    
+
     if (!allowedExtensions.includes(fileExt)) {
       throw new BadRequestException(
         `Invalid file extension. Allowed extensions: ${allowedExtensions.join(', ')}`,
@@ -174,7 +188,7 @@ export class UploadsService {
 
   private determineFileFormat(filename: string): FileFormat {
     const ext = path.extname(filename).toLowerCase();
-    
+
     switch (ext) {
       case '.cbz':
         return FileFormat.CBZ;
@@ -189,7 +203,7 @@ export class UploadsService {
     }
   }
 
-  private async cleanupTempFile(file: Express.Multer.File) {
+  private cleanupTempFile(file: Express.Multer.File) {
     try {
       // Since we're using memory storage, no temp file to cleanup
       // This is a placeholder for future disk storage implementation
@@ -226,7 +240,7 @@ export class UploadsService {
     try {
       // Eliminar archivo físico
       await fs.unlink(file.path);
-      
+
       // Marcar como eliminado en base de datos
       file.status = FileStatus.DELETED;
       await this.fileRepository.save(file);

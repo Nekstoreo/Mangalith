@@ -11,7 +11,6 @@ import {
   HttpStatus,
   ParseUUIDPipe,
   BadRequestException,
-  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadsService } from './uploads.service';
@@ -49,7 +48,12 @@ export class UploadsController {
         if (allowedMimeTypes.includes(file.mimetype)) {
           cb(null, true);
         } else {
-          cb(new BadRequestException('Invalid file type. Only CBZ, CBR, ZIP, and RAR files are allowed.'), false);
+          cb(
+            new BadRequestException(
+              'Invalid file type. Only CBZ, CBR, ZIP, and RAR files are allowed.',
+            ),
+            false,
+          );
         }
       },
     }),
@@ -72,10 +76,14 @@ export class UploadsController {
 
     // TODO: Usar el usuario real cuando la autenticación esté disponible
     const mockUserId = 'temp-user-id'; // Temporal para testing
-    
+
     try {
-      const result = await this.uploadsService.uploadFile(file, uploadDto, mockUserId);
-      
+      const result = await this.uploadsService.uploadFile(
+        file,
+        uploadDto,
+        mockUserId,
+      );
+
       return {
         success: true,
         data: result,
@@ -100,7 +108,7 @@ export class UploadsController {
   ) {
     // TODO: Usar el usuario real cuando la autenticación esté disponible
     const mockUserId = 'temp-user-id';
-    
+
     try {
       const file = await this.uploadsService.getFile(id, mockUserId);
       return {
@@ -137,7 +145,7 @@ export class UploadsController {
   ): Promise<void> {
     // TODO: Usar el usuario real cuando la autenticación esté disponible
     const mockUserId = 'temp-user-id';
-    
+
     try {
       await this.uploadsService.deleteFile(id, mockUserId);
       this.logger.log(`File deleted: ${id}`, 'UploadsController');

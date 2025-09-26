@@ -36,5 +36,3 @@ export interface ProcessingResult {
   cover?: PageMetadata;
   thumbnailPaths: Record<number, string>;
 }
-
-

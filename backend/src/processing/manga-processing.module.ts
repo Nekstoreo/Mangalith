@@ -9,5 +9,3 @@ import { ArchiveProcessorService } from './services/archive-processor.service';
   exports: [ArchiveProcessorService],
 })
 export class MangaProcessingModule {}
-
-

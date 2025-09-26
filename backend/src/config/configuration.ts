@@ -72,8 +72,7 @@ export default (): AppConfig => ({
   },
   processing: {
     tempDir: process.env.PROCESSING_TEMP_DIR || './storage/temp',
-    cacheDir:
-      process.env.PROCESSING_CACHE_DIR || './storage/cache/processing',
+    cacheDir: process.env.PROCESSING_CACHE_DIR || './storage/cache/processing',
     thumbnailsDir:
       process.env.PROCESSING_THUMBNAILS_DIR || './storage/thumbnails',
     concurrency: parseInt(process.env.PROCESSING_CONCURRENCY || '2', 10),
@@ -81,8 +80,9 @@ export default (): AppConfig => ({
       .split(',')
       .map((value) => parseInt(value.trim(), 10))
       .filter((value) => Number.isFinite(value) && value > 0),
-    supportedImageFormats: (process.env.SUPPORTED_IMAGE_FORMATS ||
-      'jpg,jpeg,png,webp')
+    supportedImageFormats: (
+      process.env.SUPPORTED_IMAGE_FORMATS || 'jpg,jpeg,png,webp'
+    )
       .split(',')
       .map((value) => value.trim().toLowerCase())
       .filter((value) => Boolean(value)),

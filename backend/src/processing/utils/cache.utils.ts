@@ -9,7 +9,10 @@ export interface CacheEntry<T> {
 }
 
 export class JsonFileCache<T> {
-  constructor(private readonly cacheDir: string, private readonly logger: WinstonLoggerService) {}
+  constructor(
+    private readonly cacheDir: string,
+    private readonly logger: WinstonLoggerService,
+  ) {}
 
   private getPath(key: string): string {
     const sanitized = key.replace(/[^a-zA-Z0-9-_]/g, '_');
@@ -24,7 +27,10 @@ export class JsonFileCache<T> {
       return parsed.value;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-        this.logger.warn(`Fallo al leer cache ${key}: ${(error as Error).message}`, 'JsonFileCache');
+        this.logger.warn(
+          `Fallo al leer cache ${key}: ${(error as Error).message}`,
+          'JsonFileCache',
+        );
       }
       return null;
     }
@@ -41,5 +47,3 @@ export class JsonFileCache<T> {
     await fs.writeFile(filePath, JSON.stringify(entry, null, 2), 'utf8');
   }
 }
-
-

@@ -56,5 +56,3 @@ export const createThumbnail = async (
       return transformer.webp({ quality: 85 }).toBuffer();
   }
 };
-
-

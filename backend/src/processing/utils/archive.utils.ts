@@ -36,7 +36,7 @@ const readZipEntries = (buffer: Buffer): ExtractedArchiveEntry[] => {
       size: entry.header.size,
       isDirectory: entry.isDirectory,
       lastModified: entry.header?.time,
-      getData: async () => entry.getData(),
+      getData: () => Promise.resolve(entry.getData()),
     }));
 };
 
@@ -48,7 +48,9 @@ const readRarEntries = async (
   await fs.writeFile(rarFilePath, buffer);
 
   try {
-    const extractor = await Unrar.createExtractorFromFile({ filename: rarFilePath });
+    const extractor = await Unrar.createExtractorFromFile({
+      filename: rarFilePath,
+    });
     const listResult = extractor.getFileList().fileHeaders;
 
     return listResult
@@ -85,5 +87,3 @@ export const extractArchiveEntries = async (
 
   return readRarEntries(buffer, tempDir);
 };
-
-
