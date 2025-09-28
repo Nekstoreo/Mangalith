@@ -11,10 +11,10 @@
 <div align="center">
 
   [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-  [![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+  [![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)](https://docs.microsoft.com/en-us/dotnet/csharp/)
   [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-  [![TypeORM](https://img.shields.io/badge/TypeORM-000000?style=for-the-badge&logo=typeorm&logoColor=white)](https://typeorm.io/)
+  [![EF Core](https://img.shields.io/badge/EF_Core-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://docs.microsoft.com/en-us/ef/core/)
   [![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 </div>
 
@@ -100,10 +100,11 @@ docker-compose up -d
 pnpm setup
 
 # Iniciar desarrollo
-pnpm dev
+pnpm dev:frontend  # Para el frontend
+dotnet run --project backend  # Para el backend
 
 # 🌐 Frontend: http://localhost:3000
-# 🔧 Backend: http://localhost:3001
+# 🔧 Backend: http://localhost:5000
 ```
 
 ## ⚙️ Configuración de Entorno
@@ -124,8 +125,10 @@ cp .env.example .env.production
 - `POSTGRES_DB`: Nombre de la base de datos
 - `POSTGRES_USER`: Usuario de PostgreSQL
 - `POSTGRES_PASSWORD`: Contraseña de PostgreSQL
-- `API_PORT`: Puerto del backend (por defecto: 3001)
-- `JWT_SECRET`: Clave secreta para JWT (cambiar en producción)
+- `ASPNETCORE_URLS`: URLs donde escucha el backend (por defecto: http://localhost:5000)
+- `JWT__SecretKey`: Clave secreta para JWT (cambiar en producción)
+- `JWT__ValidIssuer`: Emisor válido para JWT
+- `JWT__ValidAudience`: Audiencia válida para JWT
 - `NEXT_PUBLIC_API_URL`: URL de la API para el frontend
 
 ## 🤝 Contribuciones
@@ -151,7 +154,7 @@ Lee nuestras [Guías de Contribución](CONTRIBUTING.md) para más detalles.
 ## 🛠️ Arquitectura
 
 - **Frontend**: Next.js 15 + TypeScript + Tailwind CSS
-- **Backend**: Node.js 22 + Express + TypeScript + Prisma
+- **Backend**: .NET 9 + C# + Entity Framework Core
 - **Base de Datos**: PostgreSQL con migraciones automáticas
 - **Despliegue**: Docker (solo BD) + pnpm
 
