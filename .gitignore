@@ -85,3 +85,6 @@ temp/
 
 # Cursor
 .cursor/
+
+# Kiro
+.kiro/
