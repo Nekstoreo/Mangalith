@@ -88,3 +88,6 @@ temp/
 
 # Kiro
 .kiro/
+
+# Github Copilot Instructions
+.github/
