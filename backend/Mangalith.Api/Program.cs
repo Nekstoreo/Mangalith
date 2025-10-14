@@ -34,6 +34,18 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Configure file upload options
+builder.Services.Configure<Mangalith.Application.Common.Configuration.FileUploadOptions>(
+    builder.Configuration.GetSection("FileUpload"));
+
+// Configure form options for file uploads
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100MB
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
+
 builder.Services.AddCors(options =>
 {
     var allowedOrigins = builder.Configuration
