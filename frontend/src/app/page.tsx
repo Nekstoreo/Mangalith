@@ -2,6 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Upload, Users, Zap } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+import { generateHomePageSEO } from "@/lib/seo-utils";
+
+export const metadata: Metadata = generateSEOMetadata(generateHomePageSEO());
 
 export default function Home() {
   return (
