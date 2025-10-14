@@ -33,3 +33,11 @@ appsettings.*.local.json
 # Tooling caches
 *.ncrunchsolution
 *.ncrunchproject
+
+# File uploads
+uploads/
+temp/
+*.cbz
+*.cbr
+*.zip
+*.rar

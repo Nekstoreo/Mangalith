@@ -23,15 +23,34 @@ Base del servidor backend construido con ASP.NET Core 9 siguiendo principios de 
 
 ## Ejecución
 
+### Método 1: Script automatizado (Recomendado)
+```bash
+cd backend
+./scripts/safe-build.sh
+dotnet run --no-build --project Mangalith.Api
+```
+
+### Método 2: Comandos manuales
 ```bash
 cd backend
 # Restaurar dependencias
 dotnet restore
-# Compilar (workaround: ejecutar sin restaurar para evitar fallos del SDK preview)
+# Compilar (workaround: /m:1 evita segfaults de .NET 9)
 dotnet build --no-restore /m:1
 # Levantar la API
 dotnet run --no-build --project Mangalith.Api
 ```
+
+### Método 3: Usando aliases (opcional)
+```bash
+# Agregar a tu ~/.zshrc:
+source ~/Playground/mangalith/backend/.zshrc-aliases
+
+# Luego usa:
+backend-dev  # Build + Run automático
+```
+
+**⚠️ Problema conocido de .NET 9**: Si experimentas errores `MSB4166` o segmentation faults, esto es un bug de la compilación paralela en .NET 9. El proyecto ya está configurado con `BuildInParallel=false` en los `.csproj` y el flag `/m:1` en los comandos de build.
 
 La API estará disponible en `https://localhost:5001` (HTTPS) y `http://localhost:5000` (HTTP). El endpoint de salud `GET /health` y la documentación Swagger en `/swagger` están habilitados en desarrollo.
 
