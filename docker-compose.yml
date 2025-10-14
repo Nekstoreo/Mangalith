@@ -23,31 +23,9 @@ services:
       retries: 5
       start_period: 30s
 
-  # Opcional: pgAdmin para administración de la base de datos
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: mangalith-pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@mangalith.local}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    networks:
-      - mangalith-network
-    depends_on:
-      postgres:
-        condition: service_healthy
-    profiles:
-      - admin
 
 volumes:
   postgres_data:
-    driver: local
-  pgadmin_data:
     driver: local
 
 networks:
