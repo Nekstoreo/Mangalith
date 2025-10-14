@@ -48,6 +48,18 @@ public class Manga
         CreatedByUserId = createdByUserId;
     }
 
+    public Manga(string title, string? description, Guid createdByUserId)
+    {
+        Id = Guid.NewGuid();
+        Title = title;
+        Description = description;
+        Status = MangaStatus.Draft;
+        IsPublic = false;
+        CreatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = DateTime.UtcNow;
+        CreatedByUserId = createdByUserId;
+    }
+
     public void UpdateBasicInfo(string title, string? alternativeTitle, string? description, 
         string? author, string? artist, int? year)
     {
