@@ -1,0 +1,50 @@
+@baseUrl = https://localhost:5001
+@healthUrl = {{baseUrl}}/health
+@registerUrl = {{baseUrl}}/api/auth/register
+@loginUrl = {{baseUrl}}/api/auth/login
+@profileUrl = {{baseUrl}}/api/profile/me
+@random = {{$randomInt}}
+@userEmail = test-user-{{random}}@example.com
+@password = Passw0rd!{{random}}a
+
+### Health check
+GET {{healthUrl}}
+Accept: application/json
+
+### Register a new user
+# @name register
+POST {{registerUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+	"email": "{{userEmail}}",
+	"password": "{{password}}",
+	"confirmPassword": "{{password}}",
+	"fullName": "Test User {{random}}"
+}
+
+### Login with the same user
+# @name login
+POST {{loginUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+	"email": "{{userEmail}}",
+	"password": "{{password}}"
+}
+
+### Get current profile (requires Authorization header)
+GET {{profileUrl}}
+Accept: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Trigger validation error example (missing password)
+POST {{loginUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+	"email": "{{userEmail}}"
+}
