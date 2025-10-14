@@ -174,4 +174,7 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapControllers().RequireRateLimiting(RateLimiterPolicy);
 
+// Migrate and seed database
+await app.Services.MigrateAndSeedDatabaseAsync();
+
 app.Run();
