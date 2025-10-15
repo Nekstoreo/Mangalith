@@ -177,7 +177,6 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseCors(CorsPolicy);
 app.UseRateLimiter();
 app.UseAuthentication();
