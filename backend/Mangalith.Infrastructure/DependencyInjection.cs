@@ -55,6 +55,8 @@ public static class DependencyInjection
         // Repository Services - Replace in-memory with EF implementations
         services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IMangaFileRepository, EfMangaFileRepository>();
+        services.AddScoped<IMangaRepository, MangaRepository>();
+        services.AddScoped<IChapterRepository, ChapterRepository>();
         
         // Keep existing services
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();

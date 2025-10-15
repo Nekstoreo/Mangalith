@@ -12,6 +12,14 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IMangaFileProcessorService, MangaFileProcessorService>();
+        services.AddScoped<IImageProcessorService, ImageProcessorService>();
+        services.AddScoped<IMetadataExtractorService, MetadataExtractorService>();
+        
+        // Background services
+        services.AddSingleton<BackgroundFileProcessorService>();
+        services.AddHostedService(provider => provider.GetRequiredService<BackgroundFileProcessorService>());
+        
         return services;
     }
 }
