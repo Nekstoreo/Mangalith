@@ -228,7 +228,8 @@ public class MangalithDbContext : DbContext
             entity.HasOne(e => e.Manga)
                 .WithMany(m => m.Files)
                 .HasForeignKey(e => e.MangaId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false); // Allow null MangaId for orphaned files
             
             entity.HasOne(e => e.UploadedByUser)
                 .WithMany(u => u.UploadedFiles)

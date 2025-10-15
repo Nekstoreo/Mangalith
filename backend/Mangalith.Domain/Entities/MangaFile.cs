@@ -3,7 +3,7 @@ namespace Mangalith.Domain.Entities;
 public class MangaFile
 {
     public Guid Id { get; private set; }
-    public Guid MangaId { get; private set; }
+    public Guid? MangaId { get; private set; } // Nullable to allow orphaned files during upload
     public string OriginalFileName { get; private set; }
     public string StoredFileName { get; private set; }
     public string FilePath { get; private set; }
@@ -18,13 +18,13 @@ public class MangaFile
     public Guid UploadedByUserId { get; private set; }
 
     // Navigation properties
-    public Manga Manga { get; private set; } = null!;
+    public Manga? Manga { get; private set; } // Nullable navigation
     public User UploadedByUser { get; private set; } = null!;
 
     private MangaFile()
     {
         Id = Guid.Empty;
-        MangaId = Guid.Empty;
+        MangaId = null; // Changed to null
         OriginalFileName = string.Empty;
         StoredFileName = string.Empty;
         FilePath = string.Empty;
@@ -36,12 +36,12 @@ public class MangaFile
         UploadedByUserId = Guid.Empty;
     }
 
-    public MangaFile(Guid mangaId, string originalFileName, string storedFileName, 
+    public MangaFile(Guid? mangaId, string originalFileName, string storedFileName, 
         string filePath, long fileSize, string mimeType, MangaFileType fileType, 
         Guid uploadedByUserId, string? fileHash = null)
     {
         Id = Guid.NewGuid();
-        MangaId = mangaId;
+        MangaId = mangaId; // Can be null for orphaned files
         OriginalFileName = originalFileName;
         StoredFileName = storedFileName;
         FilePath = filePath;

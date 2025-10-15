@@ -61,12 +61,10 @@ public class FileService : IFileService
                 await request.File.CopyToAsync(fileStream, cancellationToken);
             }
 
-            // Create MangaFile entity with temporary manga ID (will be properly linked during processing)
-            var tempMangaId = Guid.NewGuid();
-
-            // Create MangaFile entity
+            // Create MangaFile entity without manga association (orphaned upload)
+            // Will be properly linked when manga is created or during processing
             var mangaFile = new MangaFile(
-                mangaId: tempMangaId,
+                mangaId: null, // Orphaned file - no manga association yet
                 originalFileName: request.File.FileName,
                 storedFileName: storedFileName,
                 filePath: filePath,
