@@ -34,11 +34,11 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Configure file upload options
+// Configurar opciones de carga de archivos
 builder.Services.Configure<Mangalith.Application.Common.Configuration.FileUploadOptions>(
     builder.Configuration.GetSection("FileUpload"));
 
-// Configure form options for file uploads
+// Configurar opciones de formulario para carga de archivos
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 104857600; // 100MB
@@ -177,7 +177,6 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseCors(CorsPolicy);
 app.UseRateLimiter();
 app.UseAuthentication();
@@ -186,7 +185,7 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapControllers().RequireRateLimiting(RateLimiterPolicy);
 
-// Migrate and seed database
+// Migrar y sembrar base de datos
 await app.Services.MigrateAndSeedDatabaseAsync();
 
 app.Run();

@@ -17,6 +17,6 @@ public interface IUserRepository
     Task<int> GetTotalCountAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<User>> GetActiveUsersAsync(CancellationToken cancellationToken = default);
     
-    // Legacy method for backward compatibility
+    // Método heredado para compatibilidad hacia atrás
     Task AddAsync(User user, CancellationToken cancellationToken = default);
 }

@@ -5,7 +5,7 @@ public class Chapter
     public Guid Id { get; private set; }
     public Guid MangaId { get; private set; }
     public string Title { get; private set; }
-    public double Number { get; private set; } // Allows for 1.5, 2.1, etc.
+    public double Number { get; private set; } // Permite 1.5, 2.1, etc.
     public int? VolumeNumber { get; private set; }
     public int PageCount { get; private set; }
     public string? Notes { get; private set; }
@@ -17,7 +17,7 @@ public class Chapter
     public DateTime? PublishedAtUtc { get; private set; }
     public Guid CreatedByUserId { get; private set; }
 
-    // Navigation properties
+    // Propiedades de navegación
     public Manga Manga { get; private set; } = null!;
     public User CreatedByUser { get; private set; } = null!;
     public ICollection<ChapterPage> Pages { get; private set; } = new List<ChapterPage>();
