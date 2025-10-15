@@ -92,43 +92,76 @@ cd Mangalith
 
 # Configurar variables de entorno
 cp .env.example .env
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
 
 # Iniciar base de datos
-docker-compose up -d
+docker-compose up -d postgres
 
-# Instalar dependencias y configurar
-pnpm setup
+# Aplicar migraciones (primera vez)
+cd backend/Mangalith.Api
+dotnet ef database update --context MangalithDbContext --project ../Mangalith.Infrastructure
+cd ../..
 
 # Iniciar desarrollo
-pnpm dev:frontend  # Para el frontend
-dotnet run --project backend  # Para el backend
+cd frontend && pnpm dev     # Para el frontend
+cd backend/Mangalith.Api && dotnet run  # Para el backend
 
 # 🌐 Frontend: http://localhost:3000
 # 🔧 Backend: http://localhost:5000
+# 🗄️ pgAdmin: http://localhost:5050 (opcional)
+```
+
+### Comandos Útiles
+
+```bash
+# Gestión de base de datos
+docker-compose up -d postgres       # Iniciar PostgreSQL
+docker-compose stop postgres        # Detener PostgreSQL
+./backend/scripts/reset-database.sh # Resetear base de datos completa
+docker-compose --profile admin up -d pgadmin  # Iniciar pgAdmin
+
+# Desarrollo
+cd frontend && pnpm dev              # Servidor de desarrollo frontend
+cd backend/Mangalith.Api && dotnet run  # Servidor de desarrollo backend
+
+# Construcción
+cd frontend && pnpm build            # Construir frontend para producción
+cd backend && dotnet build          # Construir backend
+
+# Limpieza
+docker-compose down -v              # Limpiar contenedores y volúmenes
 ```
 
 ## ⚙️ Configuración de Entorno
 
 ### Variables de Entorno
 
-Copia el archivo de ejemplo y configura las variables según tu ambiente:
+El proyecto utiliza archivos `.env` separados por servicio:
 
 ```bash
-# Desarrollo
+# Configuración de Docker/Infraestructura (raíz)
 cp .env.example .env
 
-# Producción
-cp .env.example .env.production
+# Configuración del Backend
+cp backend/.env.example backend/.env
+
+# Configuración del Frontend  
+cp frontend/.env.example frontend/.env.local
 ```
 
-**Variables requeridas:**
-- `POSTGRES_DB`: Nombre de la base de datos
-- `POSTGRES_USER`: Usuario de PostgreSQL
-- `POSTGRES_PASSWORD`: Contraseña de PostgreSQL
-- `ASPNETCORE_URLS`: URLs donde escucha el backend (por defecto: http://localhost:5000)
-- `JWT__SecretKey`: Clave secreta para JWT (cambiar en producción)
-- `JWT__ValidIssuer`: Emisor válido para JWT
-- `JWT__ValidAudience`: Audiencia válida para JWT
+**Variables por servicio:**
+
+**Raíz (Docker Compose):**
+- `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`: Configuración de PostgreSQL
+- `PGADMIN_EMAIL`, `PGADMIN_PASSWORD`: Configuración de pgAdmin
+
+**Backend:**
+- `DATABASE_URL`: Cadena de conexión a PostgreSQL
+- `JWT_SECRET_KEY`: Clave secreta para JWT (cambiar en producción)
+- `ASPNETCORE_URLS`: URLs donde escucha el backend
+
+**Frontend:**
 - `NEXT_PUBLIC_API_URL`: URL de la API para el frontend
 
 ## 🤝 Contribuciones

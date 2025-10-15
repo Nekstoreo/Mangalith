@@ -1,0 +1,43 @@
+# Build artifacts
+bin/
+obj/
+out/
+TestResults/
+
+# IDE specific
+.vs/
+.idea/
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+
+# Logs and diagnostics
+logs/
+*.log
+*.etl
+*.trace
+
+# Coverage reports
+coverage/
+coverage.xml
+*.codecoverage
+*.coverage
+
+# Environment and secrets
+.env
+.env.*
+!env.example
+appsettings.*.local.json
+
+# Tooling caches
+*.ncrunchsolution
+*.ncrunchproject
+
+# File uploads
+uploads/
+temp/
+*.cbz
+*.cbr
+*.zip
+*.rar

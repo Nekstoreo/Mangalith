@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangalith.Api", "Mangalith.Api\Mangalith.Api.csproj", "{D88B4676-26EA-449B-B4CE-0AF553BE718B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangalith.Domain", "Mangalith.Domain\Mangalith.Domain.csproj", "{ACA98BA4-5879-41C4-B1BD-6F7421542801}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangalith.Application", "Mangalith.Application\Mangalith.Application.csproj", "{017EBC86-6EA8-4820-BA34-C321343B987B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangalith.Infrastructure", "Mangalith.Infrastructure\Mangalith.Infrastructure.csproj", "{100FC5DF-655C-4227-8A61-CC25C3B04D30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D88B4676-26EA-449B-B4CE-0AF553BE718B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D88B4676-26EA-449B-B4CE-0AF553BE718B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D88B4676-26EA-449B-B4CE-0AF553BE718B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D88B4676-26EA-449B-B4CE-0AF553BE718B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA98BA4-5879-41C4-B1BD-6F7421542801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA98BA4-5879-41C4-B1BD-6F7421542801}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA98BA4-5879-41C4-B1BD-6F7421542801}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA98BA4-5879-41C4-B1BD-6F7421542801}.Release|Any CPU.Build.0 = Release|Any CPU
+		{017EBC86-6EA8-4820-BA34-C321343B987B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{017EBC86-6EA8-4820-BA34-C321343B987B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{017EBC86-6EA8-4820-BA34-C321343B987B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{017EBC86-6EA8-4820-BA34-C321343B987B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{100FC5DF-655C-4227-8A61-CC25C3B04D30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100FC5DF-655C-4227-8A61-CC25C3B04D30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100FC5DF-655C-4227-8A61-CC25C3B04D30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100FC5DF-655C-4227-8A61-CC25C3B04D30}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
