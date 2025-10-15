@@ -41,7 +41,7 @@
 
 ### 6. Implementar el sistema básico de subida de archivos
 
-- [ ] Desarrollar el endpoint básico de subida de archivos con validación de tipos permitidos (CBZ, CBR, ZIP) y límites de tamaño configurables. Configurar el almacenamiento de archivos en el filesystem local con estructura organizativa simple por usuario. Implementar validación básica de formato de archivos comprimidos antes de aceptar la subida. Establecer sistema de logging básico para operaciones de archivo y errores comunes. Crear respuestas apropiadas de error y éxito para la interfaz de usuario. Implementar cleanup básico de archivos temporales al finalizar la subida. Este sistema proporcionará la funcionalidad core de upload necesaria para las siguientes fases del desarrollo.
+- [X] Desarrollar el endpoint básico de subida de archivos con validación de tipos permitidos (CBZ, CBR, ZIP) y límites de tamaño configurables. Configurar el almacenamiento de archivos en el filesystem local con estructura organizativa simple por usuario. Implementar validación básica de formato de archivos comprimidos antes de aceptar la subida. Establecer sistema de logging básico para operaciones de archivo y errores comunes. Crear respuestas apropiadas de error y éxito para la interfaz de usuario. Implementar cleanup básico de archivos temporales al finalizar la subida. Este sistema proporcionará la funcionalidad core de upload necesaria para las siguientes fases del desarrollo.
 
 ### 7. Crear el procesador de archivos manga
 
