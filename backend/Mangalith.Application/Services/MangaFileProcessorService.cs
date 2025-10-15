@@ -2,6 +2,8 @@ using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SharpCompress.Archives;
+using SharpCompress.Common;
 using Mangalith.Application.Common.Configuration;
 using Mangalith.Application.Common.Exceptions;
 using Mangalith.Application.Interfaces.Repositories;
@@ -164,16 +166,85 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         }
     }
 
-    private Task<ProcessingResult> ProcessRarArchiveAsync(
+    private async Task<ProcessingResult> ProcessRarArchiveAsync(
         MangaFile mangaFile, 
         ExtractedMetadata metadata, 
         CancellationToken cancellationToken)
     {
-        // El procesamiento RAR requiere biblioteca externa (SharpCompress)
-        // Por ahora, lanzar no implementado - se agregará con el paquete SharpCompress
-        throw new FileProcessingException(
-            mangaFile.OriginalFileName, 
-            "RAR file processing requires additional setup. Please convert to ZIP/CBZ format.");
+        var extractPath = Path.Combine(_options.ProcessingPath, mangaFile.Id.ToString());
+        Directory.CreateDirectory(extractPath);
+
+        try
+        {
+            // Abrir archivo RAR/CBR usando SharpCompress
+            using var archive = ArchiveFactory.Open(mangaFile.FilePath);
+            
+            var imageEntries = archive.Entries
+                .Where(e => !e.IsDirectory && 
+                           !string.IsNullOrEmpty(e.Key) && 
+                           SupportedImageExtensions.Contains(Path.GetExtension(e.Key).ToLowerInvariant()))
+                .OrderBy(e => e.Key, new NaturalStringComparer())
+                .ToList();
+
+            if (imageEntries.Count == 0)
+            {
+                throw new FileProcessingException(mangaFile.OriginalFileName, "No valid images found in archive");
+            }
+
+            _logger.LogInformation("Found {Count} images in RAR archive {FileId}", imageEntries.Count, mangaFile.Id);
+
+            // Crear u obtener manga
+            var manga = await GetOrCreateMangaAsync(mangaFile, metadata, cancellationToken);
+            
+            // Crear capítulo
+            var chapter = await CreateChapterAsync(manga.Id, metadata, mangaFile.UploadedByUserId, cancellationToken);
+
+            // Procesar imágenes
+            var pages = new List<ChapterPage>();
+            int pageNumber = 1;
+
+            foreach (var entry in imageEntries)
+            {
+                var page = await ProcessRarImageEntryAsync(
+                    entry, 
+                    chapter.Id, 
+                    pageNumber++, 
+                    extractPath, 
+                    cancellationToken);
+                
+                if (page != null)
+                {
+                    pages.Add(page);
+                }
+            }
+
+            // Actualizar conteo de páginas del capítulo
+            chapter.UpdatePageCount(pages.Count);
+            await _chapterRepository.UpdateAsync(chapter, cancellationToken);
+
+            // Generar miniatura de portada si existe la primera página
+            if (pages.Count > 0)
+            {
+                await GenerateCoverThumbnailAsync(manga, pages[0].ImagePath, cancellationToken);
+            }
+
+            return new ProcessingResult
+            {
+                Success = true,
+                MangaId = manga.Id,
+                ChapterId = chapter.Id,
+                PageCount = pages.Count,
+                Message = "RAR file processed successfully"
+            };
+        }
+        finally
+        {
+            // Limpiar directorio de extracción
+            if (Directory.Exists(extractPath))
+            {
+                Directory.Delete(extractPath, true);
+            }
+        }
     }
 
     private async Task<ChapterPage?> ProcessImageEntryAsync(
@@ -222,6 +293,60 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         {
             _logger.LogError(ex, "Error processing image entry {EntryName} for chapter {ChapterId}", 
                 entry.FullName, chapterId);
+            return null;
+        }
+    }
+
+    private async Task<ChapterPage?> ProcessRarImageEntryAsync(
+        IArchiveEntry entry,
+        Guid chapterId,
+        int pageNumber,
+        string extractPath,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var tempImagePath = Path.Combine(extractPath, $"page_{pageNumber}{Path.GetExtension(entry.Key)}");
+            
+            // Extraer imagen desde RAR
+            using (var entryStream = entry.OpenEntryStream())
+            using (var fileStream = File.Create(tempImagePath))
+            {
+                await entryStream.CopyToAsync(fileStream, cancellationToken);
+            }
+
+            // Obtener dimensiones de imagen y optimizar
+            var imageInfo = await _imageProcessor.GetImageInfoAsync(tempImagePath, cancellationToken);
+            
+            // Crear ruta de almacenamiento permanente
+            var permanentPath = Path.Combine(
+                _options.ChapterPagesPath, 
+                chapterId.ToString(), 
+                $"{pageNumber:D4}{Path.GetExtension(entry.Key)}");
+            
+            Directory.CreateDirectory(Path.GetDirectoryName(permanentPath)!);
+
+            // Optimizar y guardar imagen
+            await _imageProcessor.OptimizeImageAsync(tempImagePath, permanentPath, cancellationToken);
+
+            // Crear entidad ChapterPage
+            var page = new ChapterPage(
+                chapterId: chapterId,
+                pageNumber: pageNumber,
+                imagePath: permanentPath,
+                mimeType: GetMimeType(Path.GetExtension(entry.Key)),
+                width: imageInfo.Width,
+                height: imageInfo.Height,
+                fileSize: new FileInfo(permanentPath).Length,
+                imageHash: imageInfo.Hash
+            );
+
+            return page;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing RAR image entry {EntryName} for chapter {ChapterId}", 
+                entry.Key, chapterId);
             return null;
         }
     }
