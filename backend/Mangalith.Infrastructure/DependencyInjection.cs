@@ -20,7 +20,7 @@ public static class DependencyInjection
     {
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 
-        // Database Configuration
+        // Configuración de la base de datos
         var connectionString = configuration.GetConnectionString("DefaultConnection") 
             ?? configuration["DATABASE_URL"] 
             ?? "Host=localhost;Port=5432;Database=mangalith;Username=mangalith;Password=mangalith123;";
@@ -36,7 +36,7 @@ public static class DependencyInjection
                 npgsqlOptions.CommandTimeout(30);
             });
 
-            // Enable detailed errors and sensitive data logging in development
+            // Habilitar errores detallados y logging de datos sensibles en desarrollo
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if (environment == "Development")
             {
@@ -45,20 +45,20 @@ public static class DependencyInjection
             }
         });
 
-        // Add health checks for database
+        // Agregar verificaciones de salud para la base de datos
         services.AddHealthChecks()
             .AddDbContextCheck<MangalithDbContext>("database");
 
-        // Data Seeder
+        // Sembrador de datos
         services.AddScoped<DataSeeder>();
 
-        // Repository Services - Replace in-memory with EF implementations
+        // Servicios de repositorio - Reemplazar implementaciones en memoria con EF
         services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IMangaFileRepository, EfMangaFileRepository>();
         services.AddScoped<IMangaRepository, MangaRepository>();
         services.AddScoped<IChapterRepository, ChapterRepository>();
         
-        // Keep existing services
+        // Mantener servicios existentes
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IJwtProvider, JwtProvider>();
 
@@ -78,7 +78,7 @@ public static class DependencyInjection
             await context.Database.MigrateAsync();
             logger.LogInformation("Database migration completed successfully");
 
-            // Only seed in development
+            // Solo sembrar en desarrollo
             if (environment.IsDevelopment())
             {
                 var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();

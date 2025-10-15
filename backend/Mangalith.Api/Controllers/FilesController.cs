@@ -27,7 +27,7 @@ public class FilesController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status413PayloadTooLarge)]
-    [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
+    [RequestSizeLimit(100 * 1024 * 1024)] // Límite de 100MB
     public async Task<IActionResult> UploadFile([FromForm] FileUploadRequest request, CancellationToken cancellationToken)
     {
         try

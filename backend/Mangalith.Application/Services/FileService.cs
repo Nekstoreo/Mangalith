@@ -32,13 +32,13 @@ public class FileService : IFileService
         {
             _logger.LogInformation("Starting file upload for user {UserId}, file: {FileName}", userId, request.File.FileName);
 
-            // Validate file
+            // Validar archivo
             await ValidateFileAsync(request.File.OpenReadStream(), request.File.FileName, cancellationToken);
 
-            // Generate file hash for duplicate detection
+            // Generar hash de archivo para detección de duplicados
             var fileHash = await GenerateFileHashAsync(request.File.OpenReadStream(), cancellationToken);
             
-            // Check for duplicates
+            // Verificar duplicados
             var existingFile = await _mangaFileRepository.GetByHashAsync(fileHash, cancellationToken);
             if (existingFile != null)
             {
@@ -46,25 +46,25 @@ public class FileService : IFileService
                 throw new FileUploadException($"File '{request.File.FileName}' already exists in the system");
             }
 
-            // Create directory structure
+            // Crear estructura de directorios
             var uploadPath = Path.Combine(_options.UploadPath, userId.ToString());
             Directory.CreateDirectory(uploadPath);
 
-            // Generate unique file name
+            // Generar nombre de archivo único
             var fileExtension = Path.GetExtension(request.File.FileName);
             var storedFileName = $"{Guid.NewGuid()}{fileExtension}";
             var filePath = Path.Combine(uploadPath, storedFileName);
 
-            // Save file to disk
+            // Guardar archivo en disco
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await request.File.CopyToAsync(fileStream, cancellationToken);
             }
 
-            // Create MangaFile entity without manga association (orphaned upload)
-            // Will be properly linked when manga is created or during processing
+            // Crear entidad MangaFile sin asociación de manga (carga huérfana)
+            // Se vinculará apropiadamente cuando se cree el manga o durante el procesamiento
             var mangaFile = new MangaFile(
-                mangaId: null, // Orphaned file - no manga association yet
+                mangaId: null, // Archivo huérfano - sin asociación de manga aún
                 originalFileName: request.File.FileName,
                 storedFileName: storedFileName,
                 filePath: filePath,
@@ -75,7 +75,7 @@ public class FileService : IFileService
                 fileHash: fileHash
             );
 
-            // Save to database
+            // Guardar en base de datos
             await _mangaFileRepository.AddAsync(mangaFile, cancellationToken);
 
             _logger.LogInformation("File uploaded successfully: {FileId} for user {UserId}", mangaFile.Id, userId);
@@ -109,20 +109,20 @@ public class FileService : IFileService
                 return false;
             }
 
-            // Check if user owns the file
+            // Verificar si el usuario es propietario del archivo
             if (mangaFile.UploadedByUserId != userId)
             {
                 _logger.LogWarning("User {UserId} attempted to delete file {FileId} they don't own", userId, fileId);
                 return false;
             }
 
-            // Delete physical file
+            // Eliminar archivo físico
             if (File.Exists(mangaFile.FilePath))
             {
                 File.Delete(mangaFile.FilePath);
             }
 
-            // Delete from database
+            // Eliminar de la base de datos
             await _mangaFileRepository.DeleteAsync(fileId, cancellationToken);
 
             _logger.LogInformation("File deleted successfully: {FileId} by user {UserId}", fileId, userId);
@@ -148,20 +148,20 @@ public class FileService : IFileService
 
     public async Task<bool> ValidateFileAsync(Stream fileStream, string fileName, CancellationToken cancellationToken = default)
     {
-        // Check file size
+        // Verificar tamaño de archivo
         if (fileStream.Length > _options.MaxFileSizeBytes)
         {
             throw new FileSizeExceededException(fileName, fileStream.Length, _options.MaxFileSizeBytes);
         }
 
-        // Check file extension
+        // Verificar extensión de archivo
         var extension = Path.GetExtension(fileName).ToLowerInvariant();
         if (!_options.AllowedExtensions.Contains(extension))
         {
             throw new InvalidFileTypeException(fileName, _options.AllowedExtensions);
         }
 
-        // Basic file validation - check if it's a valid archive
+        // Validación básica de archivo - verificar si es un archivo válido
         try
         {
             fileStream.Position = 0;
@@ -169,13 +169,13 @@ public class FileService : IFileService
             await fileStream.ReadExactlyAsync(buffer, 0, 4, cancellationToken);
             fileStream.Position = 0;
 
-            // Check for ZIP signature (PK)
+            // Verificar firma ZIP (PK)
             if (buffer[0] == 0x50 && buffer[1] == 0x4B)
             {
                 return true;
             }
 
-            // Check for RAR signature
+            // Verificar firma RAR
             if (buffer[0] == 0x52 && buffer[1] == 0x61 && buffer[2] == 0x72 && buffer[3] == 0x21)
             {
                 return true;

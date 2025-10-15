@@ -15,7 +15,7 @@ public class User
     public DateTime UpdatedAtUtc { get; private set; }
     public DateTime? LastLoginAtUtc { get; private set; }
 
-    // Navigation properties
+    // Propiedades de navegación
     public ICollection<Manga> CreatedMangas { get; private set; } = new List<Manga>();
     public ICollection<Chapter> CreatedChapters { get; private set; } = new List<Chapter>();
     public ICollection<MangaFile> UploadedFiles { get; private set; } = new List<MangaFile>();
@@ -38,7 +38,7 @@ public class User
         Email = email;
         PasswordHash = passwordHash;
         FullName = fullName;
-        Username = username ?? email.Split('@')[0]; // Default username from email
+        Username = username ?? email.Split('@')[0]; // Nombre de usuario por defecto desde email
         Role = UserRole.Reader;
         IsActive = true;
         CreatedAtUtc = DateTime.UtcNow;

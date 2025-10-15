@@ -96,7 +96,7 @@ public class EfUserRepository : IUserRepository
             .ToListAsync(cancellationToken);
     }
 
-    // Legacy method for backward compatibility
+    // Método heredado para compatibilidad hacia atrás
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
     {
         await CreateAsync(user, cancellationToken);

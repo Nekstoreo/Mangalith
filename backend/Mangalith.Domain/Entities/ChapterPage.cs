@@ -6,14 +6,14 @@ public class ChapterPage
     public Guid ChapterId { get; private set; }
     public int PageNumber { get; private set; }
     public string ImagePath { get; private set; }
-    public string? ImageHash { get; private set; } // For duplicate detection
+    public string? ImageHash { get; private set; } // Para detección de duplicados
     public int Width { get; private set; }
     public int Height { get; private set; }
     public long FileSize { get; private set; }
     public string MimeType { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
 
-    // Navigation properties
+    // Propiedades de navegación
     public Chapter Chapter { get; private set; } = null!;
 
     private ChapterPage()

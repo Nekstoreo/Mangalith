@@ -31,13 +31,13 @@ public class ProcessingController : ControllerBase
         {
             if (async)
             {
-                // Queue for background processing
+                // Encolar para procesamiento en segundo plano
                 await _backgroundProcessor.QueueFileForProcessingAsync(fileId);
                 return Accepted(new { message = "File queued for processing", fileId });
             }
             else
             {
-                // Process synchronously
+                // Procesar sincrónicamente
                 var result = await _processor.ProcessFileAsync(fileId);
                 return Ok(result);
             }

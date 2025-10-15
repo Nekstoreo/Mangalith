@@ -11,8 +11,8 @@ public class Manga
     public int? Year { get; private set; }
     public MangaStatus Status { get; private set; }
     public string? CoverImagePath { get; private set; }
-    public string? Tags { get; private set; } // JSON array of tags
-    public string? Genres { get; private set; } // JSON array of genres
+    public string? Tags { get; private set; } // Array JSON de etiquetas
+    public string? Genres { get; private set; } // Array JSON de géneros
     public int ChapterCount { get; private set; }
     public int ViewCount { get; private set; }
     public double Rating { get; private set; }
@@ -22,7 +22,7 @@ public class Manga
     public DateTime UpdatedAtUtc { get; private set; }
     public Guid CreatedByUserId { get; private set; }
 
-    // Navigation properties
+    // Propiedades de navegación
     public User CreatedByUser { get; private set; } = null!;
     public ICollection<Chapter> Chapters { get; private set; } = new List<Chapter>();
     public ICollection<MangaFile> Files { get; private set; } = new List<MangaFile>();

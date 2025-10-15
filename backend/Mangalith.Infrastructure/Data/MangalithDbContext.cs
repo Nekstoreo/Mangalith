@@ -20,7 +20,7 @@ public class MangalithDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configure User entity
+        // Configurar entidad User
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -58,7 +58,7 @@ public class MangalithDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
-        // Configure Manga entity
+        // Configurar entidad Manga
         modelBuilder.Entity<Manga>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -101,14 +101,14 @@ public class MangalithDbContext : DbContext
             entity.Property(e => e.UpdatedAtUtc)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            // Relationships
+            // Relaciones
             entity.HasOne(e => e.CreatedByUser)
                 .WithMany(u => u.CreatedMangas)
                 .HasForeignKey(e => e.CreatedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // Configure Chapter entity
+        // Configurar entidad Chapter
         modelBuilder.Entity<Chapter>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -140,7 +140,7 @@ public class MangalithDbContext : DbContext
             entity.Property(e => e.UpdatedAtUtc)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            // Relationships
+            // Relaciones
             entity.HasOne(e => e.Manga)
                 .WithMany(m => m.Chapters)
                 .HasForeignKey(e => e.MangaId)
@@ -152,7 +152,7 @@ public class MangalithDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // Configure ChapterPage entity
+        // Configurar entidad ChapterPage
         modelBuilder.Entity<ChapterPage>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -174,14 +174,14 @@ public class MangalithDbContext : DbContext
             entity.Property(e => e.CreatedAtUtc)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            // Relationships
+            // Relaciones
             entity.HasOne(e => e.Chapter)
                 .WithMany(c => c.Pages)
                 .HasForeignKey(e => e.ChapterId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Configure MangaFile entity
+        // Configurar entidad MangaFile
         modelBuilder.Entity<MangaFile>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -224,12 +224,12 @@ public class MangalithDbContext : DbContext
             entity.Property(e => e.UpdatedAtUtc)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            // Relationships
+            // Relaciones
             entity.HasOne(e => e.Manga)
                 .WithMany(m => m.Files)
                 .HasForeignKey(e => e.MangaId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(false); // Allow null MangaId for orphaned files
+                .IsRequired(false); // Permitir MangaId null para archivos huérfanos
             
             entity.HasOne(e => e.UploadedByUser)
                 .WithMany(u => u.UploadedFiles)
@@ -242,7 +242,7 @@ public class MangalithDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            // This will only be used if no options are provided (e.g., for migrations)
+            // Esto solo se usará si no se proporcionan opciones (ej., para migraciones)
             optionsBuilder.UseNpgsql("Host=localhost;Database=mangalith;Username=mangalith;Password=mangalith123");
         }
     }

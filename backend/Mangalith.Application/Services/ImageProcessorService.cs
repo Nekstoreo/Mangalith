@@ -23,7 +23,7 @@ public class ImageProcessorService : IImageProcessorService
             using var image = await Image.LoadAsync(imagePath, cancellationToken);
             var fileInfo = new FileInfo(imagePath);
             
-            // Calculate hash
+            // Calcular hash
             using var stream = File.OpenRead(imagePath);
             using var sha256 = SHA256.Create();
             var hashBytes = await sha256.ComputeHashAsync(stream, cancellationToken);
@@ -54,10 +54,10 @@ public class ImageProcessorService : IImageProcessorService
         {
             using var image = await Image.LoadAsync(sourcePath, cancellationToken);
             
-            // Optimize based on image size
+            // Optimizar según el tamaño de la imagen
             var maxDimension = Math.Max(image.Width, image.Height);
             
-            // If image is too large, resize it
+            // Si la imagen es muy grande, redimensionarla
             if (maxDimension > 2000)
             {
                 var scale = 2000.0 / maxDimension;
@@ -69,10 +69,10 @@ public class ImageProcessorService : IImageProcessorService
                     image.Width, image.Height, newWidth, newHeight);
             }
 
-            // Save with optimized quality
+            // Guardar con calidad optimizada
             var encoder = new JpegEncoder
             {
-                Quality = 85 // Good balance between quality and file size
+                Quality = 85 // Buen balance entre calidad y tamaño de archivo
             };
 
             await image.SaveAsync(destinationPath, encoder, cancellationToken);
@@ -84,7 +84,7 @@ public class ImageProcessorService : IImageProcessorService
             _logger.LogError(ex, "Error optimizing image from {SourcePath} to {DestinationPath}", 
                 sourcePath, destinationPath);
             
-            // Fallback: just copy the file
+            // Respaldo: solo copiar el archivo
             File.Copy(sourcePath, destinationPath, true);
         }
     }
@@ -100,18 +100,18 @@ public class ImageProcessorService : IImageProcessorService
         {
             using var image = await Image.LoadAsync(sourcePath, cancellationToken);
             
-            // Calculate aspect ratio
+            // Calcular relación de aspecto
             var sourceAspect = (double)image.Width / image.Height;
             var targetAspect = (double)width / height;
             
-            // Resize to cover the target dimensions
+            // Redimensionar para cubrir las dimensiones objetivo
             image.Mutate(x => x.Resize(new ResizeOptions
             {
                 Size = new Size(width, height),
                 Mode = ResizeMode.Crop
             }));
 
-            // Save as JPEG with good quality
+            // Guardar como JPEG con buena calidad
             var encoder = new JpegEncoder { Quality = 90 };
             await image.SaveAsync(destinationPath, encoder, cancellationToken);
             
@@ -131,7 +131,7 @@ public class ImageProcessorService : IImageProcessorService
         {
             using var image = await Image.LoadAsync(imagePath, cancellationToken);
             
-            // Basic validation
+            // Validación básica
             if (image.Width < 100 || image.Height < 100)
             {
                 _logger.LogWarning("Image {ImagePath} is too small: {Width}x{Height}", 

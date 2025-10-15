@@ -52,14 +52,14 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         {
             _logger.LogInformation("Starting processing for file {FileId}: {FileName}", fileId, mangaFile.OriginalFileName);
             
-            // Update status to processing
+            // Actualizar estado a procesando
             mangaFile.UpdateStatus(MangaFileStatus.Processing);
             await _mangaFileRepository.UpdateAsync(mangaFile, cancellationToken);
 
-            // Extract metadata from filename
+            // Extraer metadatos del nombre de archivo
             var metadata = _metadataExtractor.ExtractFromFilename(mangaFile.OriginalFileName);
             
-            // Process based on file type
+            // Procesar según el tipo de archivo
             var result = mangaFile.FileType switch
             {
                 MangaFileType.CBZ or MangaFileType.ZIP => await ProcessZipArchiveAsync(mangaFile, metadata, cancellationToken),
@@ -67,7 +67,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
                 _ => throw new FileProcessingException(mangaFile.OriginalFileName, "Unsupported file type")
             };
 
-            // Update status to processed
+            // Actualizar estado a procesado
             mangaFile.UpdateStatus(MangaFileStatus.Processed);
             await _mangaFileRepository.UpdateAsync(mangaFile, cancellationToken);
 
@@ -93,7 +93,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
 
         try
         {
-            // Extract archive
+            // Extraer archivo
             using (var archive = ZipFile.OpenRead(mangaFile.FilePath))
             {
                 var imageEntries = archive.Entries
@@ -109,13 +109,13 @@ public class MangaFileProcessorService : IMangaFileProcessorService
 
                 _logger.LogInformation("Found {Count} images in archive {FileId}", imageEntries.Count, mangaFile.Id);
 
-                // Create or get manga
+                // Crear u obtener manga
                 var manga = await GetOrCreateMangaAsync(mangaFile, metadata, cancellationToken);
                 
-                // Create chapter
+                // Crear capítulo
                 var chapter = await CreateChapterAsync(manga.Id, metadata, mangaFile.UploadedByUserId, cancellationToken);
 
-                // Process images
+                // Procesar imágenes
                 var pages = new List<ChapterPage>();
                 int pageNumber = 1;
 
@@ -134,11 +134,11 @@ public class MangaFileProcessorService : IMangaFileProcessorService
                     }
                 }
 
-                // Update chapter page count
+                // Actualizar conteo de páginas del capítulo
                 chapter.UpdatePageCount(pages.Count);
                 await _chapterRepository.UpdateAsync(chapter, cancellationToken);
 
-                // Generate cover thumbnail if first page exists
+                // Generar miniatura de portada si existe la primera página
                 if (pages.Count > 0)
                 {
                     await GenerateCoverThumbnailAsync(manga, pages[0].ImagePath, cancellationToken);
@@ -156,7 +156,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         }
         finally
         {
-            // Cleanup extraction directory
+            // Limpiar directorio de extracción
             if (Directory.Exists(extractPath))
             {
                 Directory.Delete(extractPath, true);
@@ -169,8 +169,8 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         ExtractedMetadata metadata, 
         CancellationToken cancellationToken)
     {
-        // RAR processing requires external library (SharpCompress)
-        // For now, throw not implemented - will be added with SharpCompress package
+        // El procesamiento RAR requiere biblioteca externa (SharpCompress)
+        // Por ahora, lanzar no implementado - se agregará con el paquete SharpCompress
         throw new FileProcessingException(
             mangaFile.OriginalFileName, 
             "RAR file processing requires additional setup. Please convert to ZIP/CBZ format.");
@@ -187,13 +187,13 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         {
             var tempImagePath = Path.Combine(extractPath, $"page_{pageNumber}{Path.GetExtension(entry.Name)}");
             
-            // Extract image
+            // Extraer imagen
             entry.ExtractToFile(tempImagePath, true);
 
-            // Get image dimensions and optimize
+            // Obtener dimensiones de imagen y optimizar
             var imageInfo = await _imageProcessor.GetImageInfoAsync(tempImagePath, cancellationToken);
             
-            // Create permanent storage path
+            // Crear ruta de almacenamiento permanente
             var permanentPath = Path.Combine(
                 _options.ChapterPagesPath, 
                 chapterId.ToString(), 
@@ -201,10 +201,10 @@ public class MangaFileProcessorService : IMangaFileProcessorService
             
             Directory.CreateDirectory(Path.GetDirectoryName(permanentPath)!);
 
-            // Optimize and save image
+            // Optimizar y guardar imagen
             await _imageProcessor.OptimizeImageAsync(tempImagePath, permanentPath, cancellationToken);
 
-            // Create ChapterPage entity
+            // Crear entidad ChapterPage
             var page = new ChapterPage(
                 chapterId: chapterId,
                 pageNumber: pageNumber,
@@ -231,7 +231,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         ExtractedMetadata metadata, 
         CancellationToken cancellationToken)
     {
-        // If file already has manga association, return it
+        // Si el archivo ya tiene asociación de manga, devolverlo
         if (mangaFile.MangaId.HasValue)
         {
             var existingManga = await _mangaRepository.GetByIdAsync(mangaFile.MangaId.Value, cancellationToken);
@@ -241,7 +241,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
             }
         }
 
-        // Create new manga from metadata
+        // Crear nuevo manga desde metadatos
         var manga = new Manga(
             title: metadata.Title ?? Path.GetFileNameWithoutExtension(mangaFile.OriginalFileName),
             description: null,
@@ -349,7 +349,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
     }
 }
 
-// Natural string comparer for proper file ordering (1, 2, 10 instead of 1, 10, 2)
+// Comparador de cadenas natural para ordenamiento apropiado de archivos (1, 2, 10 en lugar de 1, 10, 2)
 public class NaturalStringComparer : IComparer<string>
 {
     public int Compare(string? x, string? y)

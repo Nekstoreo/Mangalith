@@ -57,14 +57,14 @@ public class DataSeeder
             new User("demo@mangalith.local", HashPassword("demo123"), "Demo User", "demo")
         };
 
-        // Set roles
+        // Establecer roles
         users[0].UpdateRole(UserRole.Administrator);
         users[1].UpdateRole(UserRole.Moderator);
         users[2].UpdateRole(UserRole.Uploader);
         users[3].UpdateRole(UserRole.Reader);
         users[4].UpdateRole(UserRole.Reader);
 
-        // Add some profile info
+        // Agregar información de perfil
         users[0].UpdateProfile("Administrator", "admin", "System administrator with full access to all features.");
         users[1].UpdateProfile("Moderator User", "moderator", "Content moderator helping maintain quality standards.");
         users[2].UpdateProfile("Content Uploader", "uploader", "Dedicated uploader sharing amazing manga content.");
@@ -91,15 +91,15 @@ public class DataSeeder
             CreateSampleManga("Demon Slayer", adminUser.Id, "A young boy becomes a demon slayer to save his sister and avenge his family.", "Koyoharu Gotouge", "Koyoharu Gotouge", 2016, MangaStatus.Completed, "[\"Action\", \"Historical\", \"Shounen\", \"Supernatural\"]", "[\"Demons\", \"Family\", \"Revenge\"]")
         };
 
-        // Set some as public
+        // Establecer algunos como públicos
         mangas[0].SetPublic(true);
         mangas[1].SetPublic(true);
         mangas[2].SetPublic(true);
-        mangas[3].SetPublic(false); // Draft
+        mangas[3].SetPublic(false); // Borrador
         mangas[4].SetPublic(true);
 
-        // Add some stats
-        mangas[0].IncrementViewCount(); // Add some views
+        // Agregar algunas estadísticas
+        mangas[0].IncrementViewCount(); // Agregar algunas vistas
         mangas[0].IncrementViewCount();
         mangas[0].IncrementViewCount();
         mangas[0].UpdateRating(4.8, 150);
@@ -125,22 +125,22 @@ public class DataSeeder
 
         var chapters = new List<Chapter>();
 
-        foreach (var manga in mangas.Take(3)) // Only add chapters to first 3 mangas
+        foreach (var manga in mangas.Take(3)) // Solo agregar capítulos a los primeros 3 mangas
         {
             var creatorId = manga.CreatedByUserId;
             
-            for (int i = 1; i <= 5; i++) // 5 chapters per manga
+            for (int i = 1; i <= 5; i++) // 5 capítulos por manga
             {
                 var chapter = new Chapter(manga.Id, $"Chapter {i}", i, creatorId);
                 chapter.UpdateBasicInfo($"Chapter {i}", i, 1, $"Chapter {i} of {manga.Title}", "Translated by the community");
                 chapter.UpdateStatus(ChapterStatus.Published);
                 chapter.SetPublic(true);
-                chapter.UpdatePageCount(20); // Simulate 20 pages per chapter
+                chapter.UpdatePageCount(20); // Simular 20 páginas por capítulo
                 
                 chapters.Add(chapter);
             }
 
-            // Update manga chapter count
+            // Actualizar conteo de capítulos del manga
             manga.UpdateChapterCount(5);
         }
 
@@ -163,14 +163,14 @@ public class DataSeeder
 
     private static string HashPassword(string password)
     {
-        // Generate a random salt
+        // Generar una sal aleatoria
         byte[] salt = new byte[128 / 8];
         using (var rng = RandomNumberGenerator.Create())
         {
             rng.GetBytes(salt);
         }
 
-        // Hash the password
+        // Hashear la contraseña
         string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
             password: password,
             salt: salt,
@@ -178,7 +178,7 @@ public class DataSeeder
             iterationCount: 10000,
             numBytesRequested: 256 / 8));
 
-        // Combine salt and hash for storage
+        // Combinar sal y hash para almacenamiento
         return $"{Convert.ToBase64String(salt)}.{hashed}";
     }
 }

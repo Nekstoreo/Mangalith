@@ -4,7 +4,7 @@ public class FileUploadOptions
 {
     public const string SectionName = "FileUpload";
     
-    public long MaxFileSizeBytes { get; set; } = 100 * 1024 * 1024; // 100MB default
+    public long MaxFileSizeBytes { get; set; } = 100 * 1024 * 1024; // 100MB por defecto
     public string[] AllowedExtensions { get; set; } = { ".cbz", ".cbr", ".zip" };
     public string[] AllowedMimeTypes { get; set; } = { "application/zip", "application/x-cbz", "application/x-cbr" };
     public string UploadPath { get; set; } = "uploads";

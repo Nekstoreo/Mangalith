@@ -16,7 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IImageProcessorService, ImageProcessorService>();
         services.AddScoped<IMetadataExtractorService, MetadataExtractorService>();
         
-        // Background services
+        // Servicios en segundo plano
         services.AddSingleton<BackgroundFileProcessorService>();
         services.AddHostedService(provider => provider.GetRequiredService<BackgroundFileProcessorService>());
         

@@ -8,25 +8,25 @@ public class MetadataExtractorService : IMetadataExtractorService
 {
     private readonly ILogger<MetadataExtractorService> _logger;
 
-    // Common manga filename patterns
+    // Patrones comunes de nombres de archivos de manga
     private static readonly Regex[] FilenamePatterns = 
     {
-        // [Group] Title - Chapter X [Extra].ext
+        // [Grupo] Título - Capítulo X [Extra].ext
         new Regex(@"^\[(?<group>[^\]]+)\]\s*(?<title>.+?)\s*-\s*(?:Chapter|Ch\.?|c)\s*(?<chapter>[\d.]+)(?:\s*-\s*(?<chapterTitle>[^\[]+))?(?:\s*\[(?<extra>[^\]]+)\])?", RegexOptions.IgnoreCase),
         
-        // Title - Chapter X - Chapter Title.ext
+        // Título - Capítulo X - Título del Capítulo.ext
         new Regex(@"^(?<title>.+?)\s*-\s*(?:Chapter|Ch\.?|c)\s*(?<chapter>[\d.]+)(?:\s*-\s*(?<chapterTitle>.+?))?(?:\s*\((?<year>\d{4})\))?", RegexOptions.IgnoreCase),
         
-        // Title vX cY.ext (volume X chapter Y)
+        // Título vX cY.ext (volumen X capítulo Y)
         new Regex(@"^(?<title>.+?)\s*v(?<volume>\d+)\s*c(?<chapter>[\d.]+)", RegexOptions.IgnoreCase),
         
-        // Title - Volume X Chapter Y.ext
+        // Título - Volumen X Capítulo Y.ext
         new Regex(@"^(?<title>.+?)\s*-\s*Volume\s*(?<volume>\d+)\s*Chapter\s*(?<chapter>[\d.]+)", RegexOptions.IgnoreCase),
         
-        // Title Chapter X.ext (simple format)
+        // Título Capítulo X.ext (formato simple)
         new Regex(@"^(?<title>.+?)\s*(?:Chapter|Ch\.?|c)\s*(?<chapter>[\d.]+)", RegexOptions.IgnoreCase),
         
-        // Title - X.ext (just number)
+        // Título - X.ext (solo número)
         new Regex(@"^(?<title>.+?)\s*-\s*(?<chapter>[\d.]+)", RegexOptions.IgnoreCase)
     };
 
@@ -42,7 +42,7 @@ public class MetadataExtractorService : IMetadataExtractorService
 
         _logger.LogDebug("Extracting metadata from filename: {Filename}", filename);
 
-        // Try each pattern
+        // Probar cada patrón
         foreach (var pattern in FilenamePatterns)
         {
             var match = pattern.Match(nameWithoutExtension);
@@ -88,7 +88,7 @@ public class MetadataExtractorService : IMetadataExtractorService
             }
         }
 
-        // Fallback: use filename as title
+        // Respaldo: usar nombre de archivo como título
         metadata.Title = CleanString(nameWithoutExtension);
         _logger.LogWarning("Could not parse filename pattern, using as-is: {Title}", metadata.Title);
 
@@ -100,13 +100,13 @@ public class MetadataExtractorService : IMetadataExtractorService
         var metadata = new ExtractedMetadata();
         var dirInfo = new DirectoryInfo(directoryPath);
 
-        // Try to extract from directory name
+        // Intentar extraer del nombre del directorio
         var dirMetadata = ExtractFromFilename(dirInfo.Name);
         metadata.Title = dirMetadata.Title;
         metadata.ChapterNumber = dirMetadata.ChapterNumber;
         metadata.VolumeNumber = dirMetadata.VolumeNumber;
 
-        // Look for metadata files (ComicInfo.xml, series.json, etc.)
+        // Buscar archivos de metadatos (ComicInfo.xml, series.json, etc.)
         var comicInfoPath = Path.Combine(directoryPath, "ComicInfo.xml");
         if (File.Exists(comicInfoPath))
         {
@@ -155,12 +155,12 @@ public class MetadataExtractorService : IMetadataExtractorService
 
     private ExtractedMetadata ParseComicInfo(string filePath)
     {
-        // Basic ComicInfo.xml parsing
-        // In production, use XDocument for proper XML parsing
+        // Análisis básico de ComicInfo.xml
+        // En producción, usar XDocument para análisis XML apropiado
         var metadata = new ExtractedMetadata();
         var content = File.ReadAllText(filePath);
 
-        // Simple regex-based extraction (replace with proper XML parsing)
+        // Extracción simple basada en regex (reemplazar con análisis XML apropiado)
         var titleMatch = Regex.Match(content, @"<Title>(.+?)</Title>");
         if (titleMatch.Success)
         {
@@ -216,10 +216,10 @@ public class MetadataExtractorService : IMetadataExtractorService
         if (string.IsNullOrWhiteSpace(input))
             return string.Empty;
 
-        // Remove extra whitespace
+        // Eliminar espacios en blanco extra
         input = Regex.Replace(input, @"\s+", " ").Trim();
         
-        // Remove common artifacts
+        // Eliminar artefactos comunes
         input = input.Replace("_", " ");
         
         return input;

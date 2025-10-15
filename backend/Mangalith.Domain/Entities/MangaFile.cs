@@ -3,13 +3,13 @@ namespace Mangalith.Domain.Entities;
 public class MangaFile
 {
     public Guid Id { get; private set; }
-    public Guid? MangaId { get; private set; } // Nullable to allow orphaned files during upload
+    public Guid? MangaId { get; private set; } // Nullable para permitir archivos huérfanos durante la carga
     public string OriginalFileName { get; private set; }
     public string StoredFileName { get; private set; }
     public string FilePath { get; private set; }
     public long FileSize { get; private set; }
     public string MimeType { get; private set; }
-    public string? FileHash { get; private set; } // For duplicate detection
+    public string? FileHash { get; private set; } // Para detección de duplicados
     public MangaFileType FileType { get; private set; }
     public MangaFileStatus Status { get; private set; }
     public string? ProcessingError { get; private set; }
@@ -17,14 +17,14 @@ public class MangaFile
     public DateTime UpdatedAtUtc { get; private set; }
     public Guid UploadedByUserId { get; private set; }
 
-    // Navigation properties
-    public Manga? Manga { get; private set; } // Nullable navigation
+    // Propiedades de navegación
+    public Manga? Manga { get; private set; } // Navegación nullable
     public User UploadedByUser { get; private set; } = null!;
 
     private MangaFile()
     {
         Id = Guid.Empty;
-        MangaId = null; // Changed to null
+        MangaId = null; // Cambiado a null
         OriginalFileName = string.Empty;
         StoredFileName = string.Empty;
         FilePath = string.Empty;
@@ -41,7 +41,7 @@ public class MangaFile
         Guid uploadedByUserId, string? fileHash = null)
     {
         Id = Guid.NewGuid();
-        MangaId = mangaId; // Can be null for orphaned files
+        MangaId = mangaId; // Puede ser null para archivos huérfanos
         OriginalFileName = originalFileName;
         StoredFileName = storedFileName;
         FilePath = filePath;
