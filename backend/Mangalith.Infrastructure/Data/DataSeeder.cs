@@ -163,22 +163,19 @@ public class DataSeeder
 
     private static string HashPassword(string password)
     {
-        // Generar una sal aleatoria
-        byte[] salt = new byte[128 / 8];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(salt);
-        }
+        // Usar el mismo formato que Pbkdf2PasswordHasher
+        const int SaltSize = 16;
+        const int KeySize = 32;
+        const int Iterations = 100_000;
 
-        // Hashear la contraseña
-        string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-            password: password,
-            salt: salt,
-            prf: KeyDerivationPrf.HMACSHA256,
-            iterationCount: 10000,
-            numBytesRequested: 256 / 8));
-
-        // Combinar sal y hash para almacenamiento
-        return $"{Convert.ToBase64String(salt)}.{hashed}";
+        var salt = RandomNumberGenerator.GetBytes(SaltSize);
+        var key = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, Iterations, KeySize);
+        
+        // Combinar sal y hash en el mismo formato que Pbkdf2PasswordHasher
+        var buffer = new byte[salt.Length + key.Length];
+        Buffer.BlockCopy(salt, 0, buffer, 0, salt.Length);
+        Buffer.BlockCopy(key, 0, buffer, salt.Length, key.Length);
+        
+        return Convert.ToBase64String(buffer);
     }
 }
