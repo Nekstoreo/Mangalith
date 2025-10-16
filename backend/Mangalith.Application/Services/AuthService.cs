@@ -35,7 +35,7 @@ public class AuthService : IAuthService
 
         await _userRepository.AddAsync(user, cancellationToken);
 
-        return _jwtProvider.CreateToken(user);
+        return await _jwtProvider.CreateTokenAsync(user, cancellationToken);
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -48,6 +48,6 @@ public class AuthService : IAuthService
 
         user.UpdateLastLogin(DateTime.UtcNow);
 
-        return _jwtProvider.CreateToken(user);
+        return await _jwtProvider.CreateTokenAsync(user, cancellationToken);
     }
 }

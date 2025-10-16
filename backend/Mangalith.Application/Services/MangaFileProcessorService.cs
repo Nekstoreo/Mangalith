@@ -19,6 +19,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
     private readonly IChapterRepository _chapterRepository;
     private readonly IImageProcessorService _imageProcessor;
     private readonly IMetadataExtractorService _metadataExtractor;
+    private readonly IQuotaService _quotaService;
     private readonly ILogger<MangaFileProcessorService> _logger;
     private readonly FileUploadOptions _options;
 
@@ -30,6 +31,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         IChapterRepository chapterRepository,
         IImageProcessorService imageProcessor,
         IMetadataExtractorService metadataExtractor,
+        IQuotaService quotaService,
         ILogger<MangaFileProcessorService> logger,
         IOptions<FileUploadOptions> options)
     {
@@ -38,6 +40,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         _chapterRepository = chapterRepository;
         _imageProcessor = imageProcessor;
         _metadataExtractor = metadataExtractor;
+        _quotaService = quotaService;
         _logger = logger;
         _options = options.Value;
     }
@@ -111,7 +114,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
 
                 _logger.LogInformation("Found {Count} images in archive {FileId}", imageEntries.Count, mangaFile.Id);
 
-                // Crear u obtener manga
+                // Verificar si el usuario puede crear un manga (si es necesario)
                 var manga = await GetOrCreateMangaAsync(mangaFile, metadata, cancellationToken);
                 
                 // Crear capítulo
@@ -366,6 +369,17 @@ public class MangaFileProcessorService : IMangaFileProcessorService
             }
         }
 
+        // Verificar si el usuario puede crear un nuevo manga
+        var canCreateManga = await _quotaService.CanCreateMangaAsync(mangaFile.UploadedByUserId, cancellationToken);
+        if (!canCreateManga)
+        {
+            var quotaReport = await _quotaService.GetQuotaUsageReportAsync(mangaFile.UploadedByUserId, cancellationToken);
+            _logger.LogWarning("User {UserId} cannot create manga due to quota limits. Created: {Created}/{Limit}", 
+                mangaFile.UploadedByUserId, quotaReport.MangasCreated, quotaReport.MangaCreationLimit);
+            
+            throw new QuotaExceededException("manga_creation", quotaReport.MangasCreated, quotaReport.MangaCreationLimit);
+        }
+
         // Crear nuevo manga desde metadatos
         var manga = new Manga(
             title: metadata.Title ?? Path.GetFileNameWithoutExtension(mangaFile.OriginalFileName),
@@ -386,6 +400,9 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         }
 
         await _mangaRepository.AddAsync(manga, cancellationToken);
+        
+        // Actualizar cuotas del usuario
+        await _quotaService.TrackMangaCreationAsync(mangaFile.UploadedByUserId, cancellationToken);
         
         _logger.LogInformation("Created new manga {MangaId}: {Title}", manga.Id, manga.Title);
         

@@ -6,6 +6,7 @@ using Mangalith.Application.Common.Exceptions;
 using Mangalith.Application.Contracts.Files;
 using Mangalith.Application.Interfaces.Repositories;
 using Mangalith.Application.Interfaces.Services;
+using Mangalith.Domain.Constants;
 using Mangalith.Domain.Entities;
 
 namespace Mangalith.Application.Services;
@@ -13,15 +14,21 @@ namespace Mangalith.Application.Services;
 public class FileService : IFileService
 {
     private readonly IMangaFileRepository _mangaFileRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IQuotaService _quotaService;
     private readonly ILogger<FileService> _logger;
     private readonly FileUploadOptions _options;
 
     public FileService(
         IMangaFileRepository mangaFileRepository,
+        IUserRepository userRepository,
+        IQuotaService quotaService,
         ILogger<FileService> logger,
         IOptions<FileUploadOptions> options)
     {
         _mangaFileRepository = mangaFileRepository;
+        _userRepository = userRepository;
+        _quotaService = quotaService;
         _logger = logger;
         _options = options.Value;
     }
@@ -31,6 +38,35 @@ public class FileService : IFileService
         try
         {
             _logger.LogInformation("Starting file upload for user {UserId}, file: {FileName}", userId, request.File.FileName);
+
+            // Verificar cuotas antes de procesar el archivo
+            var canUpload = await _quotaService.CanUploadFileAsync(userId, request.File.Length, cancellationToken);
+            if (!canUpload)
+            {
+                var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+                var quotaReport = await _quotaService.GetQuotaUsageReportAsync(userId, cancellationToken);
+                
+                var errorMessage = "Upload failed due to quota restrictions.";
+                if (quotaReport.HasExceededAnyLimit)
+                {
+                    if (quotaReport.StorageUsagePercentage >= 100)
+                    {
+                        errorMessage = $"Storage quota exceeded. You are using {FormatBytes(quotaReport.StorageUsedBytes)} of {FormatBytes(quotaReport.StorageQuotaBytes)} available.";
+                    }
+                    else if (quotaReport.FilesUploadedToday >= quotaReport.DailyUploadLimit)
+                    {
+                        errorMessage = $"Daily upload limit exceeded. You have uploaded {quotaReport.FilesUploadedToday} of {quotaReport.DailyUploadLimit} files today.";
+                    }
+                }
+                else if (request.File.Length > QuotaLimits.GetMaxFileSize(user?.Role ?? UserRole.Reader))
+                {
+                    var maxSize = QuotaLimits.GetMaxFileSize(user?.Role ?? UserRole.Reader);
+                    errorMessage = $"File size {FormatBytes(request.File.Length)} exceeds maximum allowed size of {FormatBytes(maxSize)} for your role.";
+                }
+
+                _logger.LogWarning("File upload blocked for user {UserId}: {Reason}", userId, errorMessage);
+                throw new QuotaExceededException("file_upload", request.File.Length, quotaReport.StorageQuotaBytes);
+            }
 
             // Validar archivo
             await ValidateFileAsync(request.File.OpenReadStream(), request.File.FileName, cancellationToken);
@@ -78,6 +114,9 @@ public class FileService : IFileService
             // Guardar en base de datos
             await _mangaFileRepository.AddAsync(mangaFile, cancellationToken);
 
+            // Actualizar cuotas del usuario
+            await _quotaService.TrackFileUploadAsync(userId, request.File.Length, cancellationToken);
+
             _logger.LogInformation("File uploaded successfully: {FileId} for user {UserId}", mangaFile.Id, userId);
 
             return new FileUploadResponse
@@ -124,6 +163,9 @@ public class FileService : IFileService
 
             // Eliminar de la base de datos
             await _mangaFileRepository.DeleteAsync(fileId, cancellationToken);
+
+            // Actualizar cuotas del usuario
+            await _quotaService.TrackFileDeleteAsync(userId, mangaFile.FileSize, cancellationToken);
 
             _logger.LogInformation("File deleted successfully: {FileId} by user {UserId}", fileId, userId);
             return true;
@@ -209,5 +251,13 @@ public class FileService : IFileService
             ".pdf" => MangaFileType.PDF,
             _ => MangaFileType.Unknown
         };
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024):F1} MB";
+        return $"{bytes / (1024.0 * 1024 * 1024):F1} GB";
     }
 }
