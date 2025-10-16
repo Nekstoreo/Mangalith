@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mangalith.Api.Authorization;
 using Mangalith.Api.Contracts;
 using Mangalith.Application.Common.Exceptions;
 using Mangalith.Application.Contracts.Files;
 using Mangalith.Application.Interfaces.Services;
+using Mangalith.Domain.Constants;
 
 namespace Mangalith.Api.Controllers;
 
@@ -23,10 +25,14 @@ public class FilesController : ControllerBase
     }
 
     [HttpPost("upload")]
+    [RequirePermission(Permissions.File.Upload)]
+    [RequireQuota(QuotaType.FileUpload)]
     [ProducesResponseType(typeof(FileUploadResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status429TooManyRequests)]
     [RequestSizeLimit(100 * 1024 * 1024)] // Límite de 100MB
     public async Task<IActionResult> UploadFile([FromForm] FileUploadRequest request, CancellationToken cancellationToken)
     {
@@ -47,6 +53,13 @@ public class FilesController : ControllerBase
                 "file_upload_error", 
                 ex.Message));
         }
+        catch (QuotaExceededException ex)
+        {
+            _logger.LogWarning(ex, "File upload failed due to quota: {Message}", ex.Message);
+            return StatusCode(429, new ErrorResponse(
+                ex.Code, 
+                ex.Message));
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error during file upload");
@@ -57,9 +70,11 @@ public class FilesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [RequirePermission(Permissions.File.Download)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetFile(Guid id, CancellationToken cancellationToken)
     {
         try
@@ -82,6 +97,7 @@ public class FilesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [RequirePermission(Permissions.File.Delete)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
