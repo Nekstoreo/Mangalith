@@ -10,8 +10,7 @@ import {
   UserQuota,
   UpdateUserQuotaRequest,
   UserManagementDashboard,
-  PaginatedResponse,
-  ApiResponse
+  PaginatedResponse
 } from '@/lib/types'
 
 export class UserManagementService {

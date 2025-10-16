@@ -7,8 +7,7 @@ import {
   AuditExportRequest,
   AuditExportResponse,
   AuditDashboardData,
-  PaginatedResponse,
-  ApiResponse
+  PaginatedResponse
 } from '@/lib/types'
 
 export class AuditService {

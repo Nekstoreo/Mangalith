@@ -9,7 +9,7 @@ import { AuditLogTable } from './AuditLogTable'
 import { AuditFilters } from './AuditFilters'
 import { AuditStatistics } from './AuditStatistics'
 import { auditService } from '@/services/admin/audit.service'
-import { AuditLog, AuditLogFilter, AuditLogStatistics, PaginatedResponse } from '@/lib/types'
+import { AuditLog, AuditLogFilter, AuditLogStatistics } from '@/lib/types'
 import { Search, Download, RefreshCw, BarChart3 } from 'lucide-react'
 
 export const AuditLogPage: React.FC = () => {
@@ -34,6 +34,7 @@ export const AuditLogPage: React.FC = () => {
 
   useEffect(() => {
     loadAuditLogs()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export const AuditLogPage: React.FC = () => {
     }, 500)
 
     return () => clearTimeout(delayedSearch)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery])
 
   const loadAuditLogs = async () => {
@@ -61,10 +63,10 @@ export const AuditLogPage: React.FC = () => {
       if ('data' in response) {
         setAuditLogs(response.data)
         setPagination({
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          totalItems: response.totalItems,
-          pageSize: response.pageSize
+          currentPage: response.pagination.page,
+          totalPages: response.pagination.totalPages,
+          totalItems: response.pagination.totalItems,
+          pageSize: response.pagination.pageSize
         })
       } else {
         setAuditLogs(response as AuditLog[])

@@ -62,7 +62,7 @@ export const UserBulkActions: React.FC<UserBulkActionsProps> = ({
     try {
       setLoading(true)
       
-      const data: Record<string, any> = {}
+      const data: Record<string, UserRole> = {}
       if (operation === BulkUserOperation.ChangeRole) {
         data.role = targetRole
       }

@@ -130,11 +130,13 @@ export const withPermission = <P extends object>(
   permission: PermissionString,
   fallback?: React.ReactNode
 ) => {
-  return (props: P) => (
+  const WrappedComponent = (props: P) => (
     <PermissionGuard permission={permission} fallback={fallback}>
       <Component {...props} />
     </PermissionGuard>
   )
+  WrappedComponent.displayName = `withPermission(${Component.displayName || Component.name})`
+  return WrappedComponent
 }
 
 /**
@@ -145,11 +147,13 @@ export const withRole = <P extends object>(
   role: UserRole,
   fallback?: React.ReactNode
 ) => {
-  return (props: P) => (
+  const WrappedComponent = (props: P) => (
     <RoleGuard role={role} fallback={fallback}>
       <Component {...props} />
     </RoleGuard>
   )
+  WrappedComponent.displayName = `withRole(${Component.displayName || Component.name})`
+  return WrappedComponent
 }
 
 // Import the guards for the HOCs

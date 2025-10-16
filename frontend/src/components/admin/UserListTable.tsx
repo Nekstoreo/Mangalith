@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { UserSummary, UserRole } from '@/lib/types'
 import { UserStatusBadge } from './UserStatusBadge'
-import { UserRoleSelect } from './UserRoleSelect'
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 
 interface UserListTableProps {

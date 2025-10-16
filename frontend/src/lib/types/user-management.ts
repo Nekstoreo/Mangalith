@@ -124,7 +124,7 @@ export interface UserFilter {
 export interface BulkUserOperationRequest {
   userIds: string[]
   operation: BulkUserOperation
-  data?: Record<string, any>
+  data?: Record<string, unknown>
   reason?: string
 }
 

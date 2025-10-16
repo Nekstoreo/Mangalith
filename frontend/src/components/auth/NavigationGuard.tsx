@@ -11,8 +11,6 @@ interface NavigationItemProps {
   permission?: PermissionString
   role?: UserRole
   className?: string
-  activeClassName?: string
-  exactMatch?: boolean
 }
 
 /**
@@ -23,9 +21,7 @@ export const ProtectedNavLink: React.FC<NavigationItemProps> = ({
   children,
   permission,
   role,
-  className = '',
-  activeClassName = '',
-  exactMatch = false
+  className = ''
 }) => {
   const { hasPermission, hasRole, isAuthenticated } = usePermissions()
   
@@ -61,8 +57,7 @@ export const ProtectedNavMenu: React.FC<{
   }>
   className?: string
   itemClassName?: string
-  activeClassName?: string
-}> = ({ items, className, itemClassName, activeClassName }) => {
+}> = ({ items, className, itemClassName }) => {
   const { hasPermission, hasRole, isAuthenticated } = usePermissions()
   
   if (!isAuthenticated) return null

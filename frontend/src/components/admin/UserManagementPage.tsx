@@ -9,7 +9,7 @@ import { UserListTable } from './UserListTable'
 import { UserFilters } from './UserFilters'
 import { UserBulkActions } from './UserBulkActions'
 import { userManagementService } from '@/services/admin/user-management.service'
-import { UserSummary, UserFilter, PaginatedResponse } from '@/lib/types'
+import { UserSummary, UserFilter } from '@/lib/types'
 import { Search, Plus, Download, RefreshCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -35,6 +35,7 @@ export const UserManagementPage: React.FC = () => {
 
   useEffect(() => {
     loadUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export const UserManagementPage: React.FC = () => {
     }, 500)
 
     return () => clearTimeout(delayedSearch)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery])
 
   const loadUsers = async () => {
@@ -62,10 +64,10 @@ export const UserManagementPage: React.FC = () => {
       if ('data' in response) {
         setUsers(response.data)
         setPagination({
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          totalItems: response.totalItems,
-          pageSize: response.pageSize
+          currentPage: response.pagination.page,
+          totalPages: response.pagination.totalPages,
+          totalItems: response.pagination.totalItems,
+          pageSize: response.pagination.pageSize
         })
       } else {
         // Handle case where response is directly an array

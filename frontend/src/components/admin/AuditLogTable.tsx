@@ -90,7 +90,7 @@ export const AuditLogTable: React.FC<AuditLogTableProps> = ({
     return resourceId ? `${formattedResource} (${resourceId.slice(0, 8)}...)` : formattedResource
   }
 
-  const truncateDetails = (details: string | null, maxLength: number = 100) => {
+  const truncateDetails = (details: string | null | undefined, maxLength: number = 100) => {
     if (!details) return '-'
     return details.length > maxLength ? `${details.slice(0, maxLength)}...` : details
   }

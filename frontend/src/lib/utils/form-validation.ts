@@ -11,10 +11,7 @@ import { validatePermissions, hasPermission, hasRole } from './permission-utils'
 /**
  * Create a permission-based validation schema
  */
-export const createPermissionValidation = (
-  requiredPermissions: PermissionString[],
-  resourceChecks?: ResourcePermissionCheck[]
-) => {
+export const createPermissionValidation = () => {
   return z.object({}).refine(
     () => true, // We'll validate permissions separately
     {
@@ -73,9 +70,6 @@ export const userManagementValidation = z.object({
   role: z.nativeEnum(UserRole),
   isActive: z.boolean(),
   reason: z.string().optional()
-}).refine((data, ctx) => {
-  // Additional permission-based validation would be added here
-  return true
 })
 
 /**
@@ -94,7 +88,7 @@ export const invitationValidation = z.object({
 export const bulkOperationValidation = z.object({
   userIds: z.array(z.string().uuid()).min(1, 'Selecciona al menos un usuario'),
   operation: z.enum(['activate', 'deactivate', 'changeRole', 'delete']),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.string(), z.any()).optional(),
   reason: z.string().optional()
 })
 
@@ -119,7 +113,7 @@ export const createDynamicValidation = (
     message?: string
   }>
 ) => {
-  return baseSchema.refine((data) => {
+  return baseSchema.refine(() => {
     for (const rule of permissionRules) {
       if (!hasPermission(user, rule.permission)) {
         return false

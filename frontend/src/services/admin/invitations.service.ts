@@ -12,8 +12,7 @@ import {
   BulkInvitationRequest,
   ResendInvitationRequest,
   CancelInvitationRequest,
-  PaginatedResponse,
-  ApiResponse
+  PaginatedResponse
 } from '@/lib/types'
 
 export class InvitationService {

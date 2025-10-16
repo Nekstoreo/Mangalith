@@ -2,8 +2,7 @@ import { apiClient } from '@/services/api/client'
 import { 
   Permission, 
   PermissionString, 
-  UserRole, 
-  ApiResponse,
+  UserRole,
   ResourcePermissionCheck,
   PermissionCheckResult
 } from '@/lib/types'
@@ -114,7 +113,11 @@ export class PermissionService {
     errors: string[]
   }> {
     try {
-      const response = await apiClient.post('/permissions/validate', {
+      const response = await apiClient.post<{
+        isValid: boolean
+        missingPermissions: string[]
+        errors: string[]
+      }>('/permissions/validate', {
         userId,
         requiredPermissions,
         resourceChecks
@@ -138,7 +141,11 @@ export class PermissionService {
     inheritedFrom: UserRole[]
   }> {
     try {
-      const response = await apiClient.get(`/permissions/hierarchy/${role}`)
+      const response = await apiClient.get<{
+        role: UserRole
+        permissions: string[]
+        inheritedFrom: UserRole[]
+      }>(`/permissions/hierarchy/${role}`)
       
       if (response.data.success) {
         return response.data.data

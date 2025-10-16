@@ -16,6 +16,10 @@ export type LoginFormData = z.infer<typeof loginSchema>
 
 // Register validation schema
 export const registerSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'El nombre completo es requerido')
+    .min(2, 'El nombre completo debe tener al menos 2 caracteres'),
   username: z
     .string()
     .min(1, 'El nombre de usuario es requerido')

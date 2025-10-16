@@ -1,2 +1,2 @@
-export { useAuthStore, type User } from './auth'
+export { useAuthStore } from './auth'
 export { usePreferencesStore, type UserPreferences } from './preferences'

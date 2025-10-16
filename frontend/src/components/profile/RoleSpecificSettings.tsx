@@ -11,7 +11,6 @@ import {
   Shield, 
   Settings, 
   Crown,
-  TrendingUp,
   AlertTriangle,
   Users,
   FileText,

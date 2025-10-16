@@ -36,6 +36,7 @@ export const UserDetailPage: React.FC<UserDetailPageProps> = ({ userId }) => {
 
   useEffect(() => {
     loadUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   useEffect(() => {

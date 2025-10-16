@@ -5,8 +5,7 @@ import {
   RegisterRequest, 
   AuthResponse, 
   ProfileUpdateRequest, 
-  ChangePasswordRequest,
-  ApiResponse 
+  ChangePasswordRequest
 } from '@/lib/types'
 
 export class AuthService {

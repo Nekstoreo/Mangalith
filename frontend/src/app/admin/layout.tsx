@@ -3,7 +3,7 @@
 import React from 'react'
 import { ProtectedRoute } from '@/components/auth'
 import { UserRole } from '@/lib/types'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { usePathname, useRouter } from 'next/navigation'
 import { Users, FileText, UserPlus, Settings, BarChart3 } from 'lucide-react'
 

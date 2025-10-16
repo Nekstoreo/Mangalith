@@ -1,7 +1,7 @@
 /**
  * Standard API response wrapper
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data: T
   message?: string
@@ -11,7 +11,7 @@ export interface ApiResponse<T = any> {
 /**
  * Paginated API response
  */
-export interface PaginatedResponse<T = any> {
+export interface PaginatedResponse<T = unknown> {
   success: boolean
   data: T[]
   pagination: PaginationInfo
@@ -36,7 +36,7 @@ export interface PaginationInfo {
 export interface ApiError {
   code: string
   message: string
-  details?: Record<string, any>
+  details?: Record<string, unknown>
   timestamp: string
 }
 
@@ -155,9 +155,9 @@ export enum HttpMethod {
  */
 export interface ApiClient {
   get<T>(url: string, options?: RequestOptions): Promise<ApiResponse<T>>
-  post<T>(url: string, data?: any, options?: RequestOptions): Promise<ApiResponse<T>>
-  put<T>(url: string, data?: any, options?: RequestOptions): Promise<ApiResponse<T>>
-  patch<T>(url: string, data?: any, options?: RequestOptions): Promise<ApiResponse<T>>
+  post<T>(url: string, data?: unknown, options?: RequestOptions): Promise<ApiResponse<T>>
+  put<T>(url: string, data?: unknown, options?: RequestOptions): Promise<ApiResponse<T>>
+  patch<T>(url: string, data?: unknown, options?: RequestOptions): Promise<ApiResponse<T>>
   delete<T>(url: string, options?: RequestOptions): Promise<ApiResponse<T>>
   upload<T>(url: string, file: File, onProgress?: (progress: UploadProgress) => void): Promise<ApiResponse<T>>
 }

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { InvitationTable } from './InvitationTable'
 import { CreateInvitationForm } from './CreateInvitationForm'
 import { invitationService } from '@/services/admin/invitations.service'
-import { InvitationSummary, InvitationFilter, InvitationStatistics, PaginatedResponse, InvitationStatus } from '@/lib/types'
+import { InvitationSummary, InvitationFilter, InvitationStatistics, InvitationStatus } from '@/lib/types'
 import { Search, Plus, RefreshCw, Mail, Clock, CheckCircle, XCircle } from 'lucide-react'
 
 export const InvitationManagementPage: React.FC = () => {
@@ -36,6 +36,7 @@ export const InvitationManagementPage: React.FC = () => {
   useEffect(() => {
     loadInvitations()
     loadStatistics()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export const InvitationManagementPage: React.FC = () => {
     }, 500)
 
     return () => clearTimeout(delayedSearch)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery])
 
   useEffect(() => {
@@ -87,10 +89,10 @@ export const InvitationManagementPage: React.FC = () => {
       if ('data' in response) {
         setInvitations(response.data)
         setPagination({
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          totalItems: response.totalItems,
-          pageSize: response.pageSize
+          currentPage: response.pagination.page,
+          totalPages: response.pagination.totalPages,
+          totalItems: response.pagination.totalItems,
+          pageSize: response.pagination.pageSize
         })
       } else {
         setInvitations(response as InvitationSummary[])

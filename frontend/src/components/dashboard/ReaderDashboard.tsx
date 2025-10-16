@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -12,13 +12,10 @@ import {
   Clock, 
   TrendingUp,
   Heart,
-  Bookmark,
   Calendar,
   Award,
   ArrowRight,
-  Plus,
-  Search,
-  Filter
+  Search
 } from 'lucide-react'
 import Link from 'next/link'
 import { useApiData } from '@/hooks'
@@ -75,12 +72,6 @@ interface ReaderStats {
 
 export const ReaderDashboard: React.FC = () => {
   const { data: stats, isLoading, error } = useApiData<ReaderStats>('/dashboard/reader')
-
-  const getProgressColor = (progress: number) => {
-    if (progress >= 80) return 'bg-green-500'
-    if (progress >= 50) return 'bg-yellow-500'
-    return 'bg-blue-500'
-  }
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {

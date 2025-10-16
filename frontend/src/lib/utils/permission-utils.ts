@@ -4,8 +4,7 @@ import {
   User, 
   RoleHierarchy,
   PermissionValidation,
-  ResourcePermissionCheck,
-  PermissionCheckResult
+  ResourcePermissionCheck
 } from '@/lib/types'
 
 /**

@@ -127,16 +127,20 @@ export const PermissionSwitch: React.FC<{
   }>
   fallback?: React.ReactNode
 }> = ({ cases, fallback }) => {
+  const userPermission = usePermission
+  const userAnyPermission = useAnyPermission
+  const userAllPermissions = useAllPermissions
+
+  // Find the first case that matches the user's permissions
   for (const { permission, permissions, requireAll, component } of cases) {
-    const hasPermission = usePermission(permission!)
-    const hasAnyPermission = useAnyPermission(permissions || [])
-    const hasAllPermissions = useAllPermissions(permissions || [])
-    
     let shouldRender = false
     
     if (permission) {
+      const hasPermission = userPermission(permission)
       shouldRender = hasPermission
     } else if (permissions && permissions.length > 0) {
+      const hasAnyPermission = userAnyPermission(permissions || [])
+      const hasAllPermissions = userAllPermissions(permissions || [])
       shouldRender = requireAll ? hasAllPermissions : hasAnyPermission
     }
     
@@ -144,7 +148,7 @@ export const PermissionSwitch: React.FC<{
       return <>{component}</>
     }
   }
-  
+
   return <>{fallback}</>
 }
 
