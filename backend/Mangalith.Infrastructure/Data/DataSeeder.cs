@@ -25,7 +25,19 @@ public class DataSeeder
         {
             await _context.Database.EnsureCreatedAsync();
 
-            if (await _context.Users.AnyAsync())
+            // Check if tables exist by trying to query them safely
+            bool isSeeded = false;
+            try
+            {
+                isSeeded = await _context.Users.AnyAsync();
+            }
+            catch (Exception)
+            {
+                // Tables don't exist yet, continue with seeding
+                isSeeded = false;
+            }
+
+            if (isSeeded)
             {
                 _logger.LogInformation("Database already seeded, skipping...");
                 return;

@@ -173,6 +173,9 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
+// Migrar y sembrar base de datos ANTES de configurar el pipeline
+await app.Services.MigrateAndSeedDatabaseAsync();
+
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -195,8 +198,5 @@ app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 app.MapControllers().RequireRateLimiting(RateLimiterPolicy);
-
-// Migrar y sembrar base de datos
-await app.Services.MigrateAndSeedDatabaseAsync();
 
 app.Run();

@@ -81,6 +81,10 @@ public static class DependencyInjection
 
         try
         {
+            logger.LogInformation("Ensuring database is created...");
+            await context.Database.EnsureCreatedAsync();
+            logger.LogInformation("Database creation ensured");
+
             logger.LogInformation("Starting database migration...");
             await context.Database.MigrateAsync();
             logger.LogInformation("Database migration completed successfully");
