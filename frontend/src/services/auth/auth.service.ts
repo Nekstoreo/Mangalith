@@ -1,21 +1,13 @@
 import { apiClient } from '@/services/api/client'
-import { User } from '@/stores'
-
-export interface LoginRequest {
-  email: string
-  password: string
-}
-
-export interface RegisterRequest {
-  username: string
-  email: string
-  password: string
-}
-
-export interface AuthResponse {
-  user: User
-  token: string
-}
+import { 
+  User, 
+  LoginRequest, 
+  RegisterRequest, 
+  AuthResponse, 
+  ProfileUpdateRequest, 
+  ChangePasswordRequest,
+  ApiResponse 
+} from '@/lib/types'
 
 export class AuthService {
   // Login user
@@ -67,7 +59,7 @@ export class AuthService {
   }
 
   // Update user profile
-  async updateProfile(updates: Partial<User>): Promise<User> {
+  async updateProfile(updates: ProfileUpdateRequest): Promise<User> {
     try {
       const response = await apiClient.put<User>('/auth/profile', updates)
 
@@ -83,10 +75,7 @@ export class AuthService {
   }
 
   // Change password
-  async changePassword(data: {
-    currentPassword: string
-    newPassword: string
-  }): Promise<void> {
+  async changePassword(data: ChangePasswordRequest): Promise<void> {
     try {
       const response = await apiClient.post('/auth/change-password', data)
 
