@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Mangalith.Api.Contracts;
+using Mangalith.Api.Extensions;
 using Mangalith.Api.Middleware;
 using Mangalith.Application;
 using Mangalith.Application.Common.Models;
@@ -37,6 +38,14 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Configurar opciones de carga de archivos
 builder.Services.Configure<Mangalith.Application.Common.Configuration.FileUploadOptions>(
     builder.Configuration.GetSection("FileUpload"));
+
+// Configurar opciones de rate limiting
+builder.Services.Configure<Mangalith.Api.Middleware.RateLimitingOptions>(
+    builder.Configuration.GetSection("RateLimiting"));
+
+// Configurar opciones del sistema de permisos
+builder.Services.Configure<Mangalith.Application.Common.Configuration.PermissionSystemOptions>(
+    builder.Configuration.GetSection("PermissionSystem"));
 
 // Configurar opciones de formulario para carga de archivos
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -139,7 +148,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddPermissionAuthorization();
 
 builder.Services.AddHttpsRedirection(options =>
 {
@@ -180,6 +189,8 @@ else
 app.UseCors(CorsPolicy);
 app.UseRateLimiter();
 app.UseAuthentication();
+app.UseMiddleware<RateLimitingMiddleware>();
+app.UsePermissionMiddleware();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");

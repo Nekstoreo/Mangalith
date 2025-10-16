@@ -57,10 +57,17 @@ public static class DependencyInjection
         services.AddScoped<IMangaFileRepository, EfMangaFileRepository>();
         services.AddScoped<IMangaRepository, MangaRepository>();
         services.AddScoped<IChapterRepository, ChapterRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IUserInvitationRepository, UserInvitationRepository>();
+        services.AddScoped<IUserQuotaRepository, UserQuotaRepository>();
+        services.AddScoped<IRateLimitRepository, RateLimitRepository>();
         
         // Mantener servicios existentes
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
-        services.AddSingleton<IJwtProvider, JwtProvider>();
+        services.AddScoped<IJwtProvider, JwtProvider>();
+        
+        // Caché en memoria para el sistema de permisos
+        services.AddMemoryCache();
 
         return services;
     }
