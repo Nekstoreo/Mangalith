@@ -3,6 +3,7 @@ using System;
 using Mangalith.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mangalith.Infrastructure.Migrations
 {
     [DbContext(typeof(MangalithDbContext))]
-    partial class MangalithDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015053041_AddRolePermissionSystem")]
+    partial class AddRolePermissionSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -401,50 +404,6 @@ namespace Mangalith.Infrastructure.Migrations
                     b.ToTable("Permissions");
                 });
 
-            modelBuilder.Entity("Mangalith.Domain.Entities.RateLimitEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Endpoint")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime>("LastRequestUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("RequestCount")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("WindowStartUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Endpoint");
-
-                    b.HasIndex("LastRequestUtc");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("WindowStartUtc");
-
-                    b.HasIndex("UserId", "Endpoint")
-                        .IsUnique();
-
-                    b.ToTable("RateLimitEntries");
-                });
-
             modelBuilder.Entity("Mangalith.Domain.Entities.RolePermission", b =>
                 {
                     b.Property<int>("Role")
@@ -584,49 +543,6 @@ namespace Mangalith.Infrastructure.Migrations
                     b.ToTable("UserInvitations");
                 });
 
-            modelBuilder.Entity("Mangalith.Domain.Entities.UserQuota", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<int>("FilesUploadedToday")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("LastResetDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("MangasCreated")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("StorageUsedBytes")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LastResetDate");
-
-                    b.HasIndex("StorageUsedBytes");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("UserQuotas");
-                });
-
             modelBuilder.Entity("Mangalith.Domain.Entities.AuditLog", b =>
                 {
                     b.HasOne("Mangalith.Domain.Entities.User", "User")
@@ -697,17 +613,6 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("UploadedByUser");
                 });
 
-            modelBuilder.Entity("Mangalith.Domain.Entities.RateLimitEntry", b =>
-                {
-                    b.HasOne("Mangalith.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Mangalith.Domain.Entities.RolePermission", b =>
                 {
                     b.HasOne("Mangalith.Domain.Entities.Permission", "Permission")
@@ -735,17 +640,6 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("AcceptedBy");
 
                     b.Navigation("InvitedBy");
-                });
-
-            modelBuilder.Entity("Mangalith.Domain.Entities.UserQuota", b =>
-                {
-                    b.HasOne("Mangalith.Domain.Entities.User", "User")
-                        .WithOne()
-                        .HasForeignKey("Mangalith.Domain.Entities.UserQuota", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Mangalith.Domain.Entities.Chapter", b =>

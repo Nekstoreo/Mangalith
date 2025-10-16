@@ -15,6 +15,12 @@ public class MangalithDbContext : DbContext
     public DbSet<Chapter> Chapters => Set<Chapter>();
     public DbSet<ChapterPage> ChapterPages => Set<ChapterPage>();
     public DbSet<MangaFile> MangaFiles => Set<MangaFile>();
+    public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<UserInvitation> UserInvitations => Set<UserInvitation>();
+    public DbSet<UserQuota> UserQuotas => Set<UserQuota>();
+    public DbSet<RateLimitEntry> RateLimitEntries => Set<RateLimitEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -235,6 +241,183 @@ public class MangalithDbContext : DbContext
                 .WithMany(u => u.UploadedFiles)
                 .HasForeignKey(e => e.UploadedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configurar entidad Permission
+        modelBuilder.Entity<Permission>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.Resource, e.Action }).IsUnique();
+            entity.HasIndex(e => e.Resource);
+            entity.HasIndex(e => e.Action);
+            
+            entity.Property(e => e.Resource)
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            entity.Property(e => e.Action)
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Configurar propiedad computada Name (solo lectura)
+            entity.Ignore(e => e.Name);
+        });
+
+        // Configurar entidad RolePermission
+        modelBuilder.Entity<RolePermission>(entity =>
+        {
+            entity.HasKey(e => new { e.Role, e.PermissionId });
+            entity.HasIndex(e => e.Role);
+            entity.HasIndex(e => e.PermissionId);
+            
+            entity.Property(e => e.Role)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.GrantedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Relaciones
+            entity.HasOne(e => e.Permission)
+                .WithMany(p => p.RolePermissions)
+                .HasForeignKey(e => e.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configurar entidad AuditLog
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.TimestampUtc);
+            entity.HasIndex(e => e.Action);
+            entity.HasIndex(e => e.Resource);
+            entity.HasIndex(e => new { e.Resource, e.ResourceId });
+            entity.HasIndex(e => e.Success);
+            
+            entity.Property(e => e.Action)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            entity.Property(e => e.Resource)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            entity.Property(e => e.ResourceId)
+                .HasMaxLength(100);
+            
+            entity.Property(e => e.Details)
+                .HasMaxLength(2000);
+            
+            entity.Property(e => e.IpAddress)
+                .IsRequired()
+                .HasMaxLength(45); // IPv6 máximo
+            
+            entity.Property(e => e.UserAgent)
+                .HasMaxLength(500);
+            
+            entity.Property(e => e.TimestampUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Relaciones
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configurar entidad UserInvitation
+        modelBuilder.Entity<UserInvitation>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => e.Token).IsUnique();
+            entity.HasIndex(e => e.InvitedByUserId);
+            entity.HasIndex(e => e.AcceptedByUserId);
+            entity.HasIndex(e => e.ExpiresAtUtc);
+            entity.HasIndex(e => e.AcceptedAtUtc);
+            
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            entity.Property(e => e.TargetRole)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.Token)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Configurar propiedades computadas (solo lectura)
+            entity.Ignore(e => e.IsExpired);
+            entity.Ignore(e => e.IsAccepted);
+            entity.Ignore(e => e.IsValid);
+
+            // Relaciones
+            entity.HasOne(e => e.InvitedBy)
+                .WithMany()
+                .HasForeignKey(e => e.InvitedByUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.AcceptedBy)
+                .WithMany()
+                .HasForeignKey(e => e.AcceptedByUserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+        });
+
+        // Configurar entidad UserQuota
+        modelBuilder.Entity<UserQuota>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasIndex(e => e.StorageUsedBytes);
+            entity.HasIndex(e => e.LastResetDate);
+            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.Property(e => e.UpdatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Relaciones
+            entity.HasOne(e => e.User)
+                .WithOne()
+                .HasForeignKey<UserQuota>(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configurar entidad RateLimitEntry
+        modelBuilder.Entity<RateLimitEntry>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.Endpoint }).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Endpoint);
+            entity.HasIndex(e => e.WindowStartUtc);
+            entity.HasIndex(e => e.LastRequestUtc);
+            
+            entity.Property(e => e.Endpoint)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Relaciones
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 
