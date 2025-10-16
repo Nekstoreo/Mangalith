@@ -33,9 +33,9 @@ public class AuthService : IAuthService
         var passwordHash = _passwordHasher.Hash(request.Password);
         var user = new User(request.Email, passwordHash, request.FullName);
 
-        await _userRepository.AddAsync(user, cancellationToken);
+        await _userRepository.CreateAsync(user, cancellationToken);
 
-        return _jwtProvider.CreateToken(user);
+        return await _jwtProvider.CreateTokenAsync(user, cancellationToken);
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -48,6 +48,6 @@ public class AuthService : IAuthService
 
         user.UpdateLastLogin(DateTime.UtcNow);
 
-        return _jwtProvider.CreateToken(user);
+        return await _jwtProvider.CreateTokenAsync(user, cancellationToken);
     }
 }

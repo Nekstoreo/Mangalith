@@ -22,6 +22,67 @@ namespace Mangalith.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.AuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<string>("Resource")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ResourceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("TimestampUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Action");
+
+                    b.HasIndex("Resource");
+
+                    b.HasIndex("Success");
+
+                    b.HasIndex("TimestampUtc");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Resource", "ResourceId");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.Chapter", b =>
                 {
                     b.Property<Guid>("Id")
@@ -300,6 +361,112 @@ namespace Mangalith.Infrastructure.Migrations
                     b.ToTable("MangaFiles");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Resource")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Action");
+
+                    b.HasIndex("Resource");
+
+                    b.HasIndex("Resource", "Action")
+                        .IsUnique();
+
+                    b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.RateLimitEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("LastRequestUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RequestCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("WindowStartUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Endpoint");
+
+                    b.HasIndex("LastRequestUtc");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WindowStartUtc");
+
+                    b.HasIndex("UserId", "Endpoint")
+                        .IsUnique();
+
+                    b.ToTable("RateLimitEntries");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.RolePermission", b =>
+                {
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("GrantedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Role", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("Role");
+
+                    b.ToTable("RolePermissions");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -363,6 +530,114 @@ namespace Mangalith.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.UserInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("AcceptedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("AcceptedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("InvitedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("TargetRole")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcceptedAtUtc");
+
+                    b.HasIndex("AcceptedByUserId");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("ExpiresAtUtc");
+
+                    b.HasIndex("InvitedByUserId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("UserInvitations");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.UserQuota", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("FilesUploadedToday")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastResetDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MangasCreated")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("StorageUsedBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastResetDate");
+
+                    b.HasIndex("StorageUsedBytes");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserQuotas");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.AuditLog", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.Chapter", b =>
                 {
                     b.HasOne("Mangalith.Domain.Entities.User", "CreatedByUser")
@@ -422,6 +697,57 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("UploadedByUser");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.RateLimitEntry", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.RolePermission", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.UserInvitation", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.User", "AcceptedBy")
+                        .WithMany()
+                        .HasForeignKey("AcceptedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Mangalith.Domain.Entities.User", "InvitedBy")
+                        .WithMany()
+                        .HasForeignKey("InvitedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AcceptedBy");
+
+                    b.Navigation("InvitedBy");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.UserQuota", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("Mangalith.Domain.Entities.UserQuota", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.Chapter", b =>
                 {
                     b.Navigation("Pages");
@@ -432,6 +758,11 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("Chapters");
 
                     b.Navigation("Files");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("Mangalith.Domain.Entities.User", b =>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using System.Text;
 using Mangalith.Domain.Entities;
+using Mangalith.Domain.Constants;
 
 namespace Mangalith.Infrastructure.Data;
 
@@ -24,7 +25,19 @@ public class DataSeeder
         {
             await _context.Database.EnsureCreatedAsync();
 
-            if (await _context.Users.AnyAsync())
+            // Check if tables exist by trying to query them safely
+            bool isSeeded = false;
+            try
+            {
+                isSeeded = await _context.Users.AnyAsync();
+            }
+            catch (Exception)
+            {
+                // Tables don't exist yet, continue with seeding
+                isSeeded = false;
+            }
+
+            if (isSeeded)
             {
                 _logger.LogInformation("Database already seeded, skipping...");
                 return;
@@ -32,7 +45,10 @@ public class DataSeeder
 
             _logger.LogInformation("Starting database seeding...");
 
+            await SeedPermissionsAsync();
+            await SeedRolePermissionsAsync();
             await SeedUsersAsync();
+            await SeedUserQuotasAsync();
             await SeedMangasAsync();
             await SeedChaptersAsync();
 
@@ -150,6 +166,136 @@ public class DataSeeder
         _logger.LogInformation("Seeded {Count} chapters", chapters.Count);
     }
 
+    private async Task SeedPermissionsAsync()
+    {
+        if (await _context.Permissions.AnyAsync())
+        {
+            _logger.LogInformation("Permissions already exist, skipping permission seeding...");
+            return;
+        }
+
+        var permissionDefinitions = Permissions.GetAllPermissions();
+        var permissions = new List<Permission>();
+
+        foreach (var (permissionName, description) in permissionDefinitions)
+        {
+            var parts = permissionName.Split('.');
+            if (parts.Length == 2)
+            {
+                var resource = parts[0];
+                var action = parts[1];
+                
+                // Validate permission format
+                if (string.IsNullOrWhiteSpace(resource) || string.IsNullOrWhiteSpace(action))
+                {
+                    _logger.LogWarning("Skipping invalid permission: {PermissionName}", permissionName);
+                    continue;
+                }
+                
+                permissions.Add(new Permission(resource, action, description));
+            }
+            else
+            {
+                _logger.LogWarning("Skipping malformed permission: {PermissionName}", permissionName);
+            }
+        }
+
+        if (permissions.Count == 0)
+        {
+            _logger.LogError("No valid permissions found to seed");
+            throw new InvalidOperationException("No valid permissions found to seed");
+        }
+
+        await _context.Permissions.AddRangeAsync(permissions);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} permissions", permissions.Count);
+        
+        // Log all seeded permissions for verification
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            foreach (var permission in permissions)
+            {
+                _logger.LogDebug("Seeded permission: {Permission} - {Description}", permission.Name, permission.Description);
+            }
+        }
+    }
+
+    private async Task SeedRolePermissionsAsync()
+    {
+        if (await _context.RolePermissions.AnyAsync())
+        {
+            _logger.LogInformation("Role permissions already exist, skipping role permission seeding...");
+            return;
+        }
+
+        var permissions = await _context.Permissions.ToListAsync();
+        var rolePermissions = new List<RolePermission>();
+        var missingPermissions = new List<string>();
+
+        foreach (var (role, permissionNames) in RolePermissions.Mappings)
+        {
+            var rolePermissionCount = 0;
+            
+            foreach (var permissionName in permissionNames)
+            {
+                var permission = permissions.FirstOrDefault(p => p.Name == permissionName);
+                if (permission != null)
+                {
+                    // Check for duplicate role-permission mappings
+                    if (!rolePermissions.Any(rp => rp.Role == role && rp.PermissionId == permission.Id))
+                    {
+                        rolePermissions.Add(new RolePermission(role, permission.Id));
+                        rolePermissionCount++;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Duplicate role-permission mapping skipped: {Role} - {Permission}", role, permissionName);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Permission '{PermissionName}' not found for role '{Role}'", permissionName, role);
+                    missingPermissions.Add($"{role}: {permissionName}");
+                }
+            }
+            
+            _logger.LogInformation("Role {Role} assigned {Count} permissions", role, rolePermissionCount);
+        }
+
+        if (missingPermissions.Count > 0)
+        {
+            _logger.LogError("Found {Count} missing permissions during role assignment:", missingPermissions.Count);
+            foreach (var missing in missingPermissions)
+            {
+                _logger.LogError("Missing: {MissingPermission}", missing);
+            }
+        }
+
+        if (rolePermissions.Count == 0)
+        {
+            _logger.LogError("No valid role permissions found to seed");
+            throw new InvalidOperationException("No valid role permissions found to seed");
+        }
+
+        await _context.RolePermissions.AddRangeAsync(rolePermissions);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} role permissions", rolePermissions.Count);
+        
+        // Validate role permission distribution
+        foreach (UserRole role in Enum.GetValues<UserRole>())
+        {
+            var count = rolePermissions.Count(rp => rp.Role == role);
+            _logger.LogInformation("Role {Role} has {Count} permissions assigned", role, count);
+            
+            if (count == 0)
+            {
+                _logger.LogWarning("Role {Role} has no permissions assigned", role);
+            }
+        }
+    }
+
     private static Manga CreateSampleManga(string title, Guid createdByUserId, string description, 
         string author, string artist, int year, MangaStatus status, string genres, string tags)
     {
@@ -177,5 +323,32 @@ public class DataSeeder
         Buffer.BlockCopy(key, 0, buffer, salt.Length, key.Length);
         
         return Convert.ToBase64String(buffer);
+    }
+
+    private async Task SeedUserQuotasAsync()
+    {
+        var users = await _context.Users.ToListAsync();
+        var existingQuotas = await _context.UserQuotas.Select(q => q.UserId).ToListAsync();
+        var quotasToAdd = new List<UserQuota>();
+
+        foreach (var user in users)
+        {
+            if (!existingQuotas.Contains(user.Id))
+            {
+                var quota = new UserQuota(user.Id);
+                quotasToAdd.Add(quota);
+            }
+        }
+
+        if (quotasToAdd.Count > 0)
+        {
+            await _context.UserQuotas.AddRangeAsync(quotasToAdd);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Seeded {Count} user quotas", quotasToAdd.Count);
+        }
+        else
+        {
+            _logger.LogInformation("All users already have quota records");
+        }
     }
 }

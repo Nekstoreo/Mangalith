@@ -16,7 +16,5 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetByRoleAsync(UserRole role, CancellationToken cancellationToken = default);
     Task<int> GetTotalCountAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<User>> GetActiveUsersAsync(CancellationToken cancellationToken = default);
-    
-    // Método heredado para compatibilidad hacia atrás
-    Task AddAsync(User user, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(CancellationToken cancellationToken = default);
 }

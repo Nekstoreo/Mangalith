@@ -1,21 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-export interface User {
-  id: string
-  username: string
-  email: string
-  avatar?: string
-  bio?: string
-  createdAt: string
-  updatedAt: string
-  stats?: {
-    totalManga: number
-    totalReadChapters: number
-    favoriteSeries: number
-    readingStreak: number
-  }
-}
+import { User, UserRole, PermissionString } from '@/lib/types'
 
 interface AuthState {
   user: User | null
@@ -32,6 +17,11 @@ interface AuthActions {
   setError: (error: string | null) => void
   updateUser: (updates: Partial<User>) => void
   clearError: () => void
+  hasPermission: (permission: PermissionString) => boolean
+  hasRole: (role: UserRole) => boolean
+  hasAnyPermission: (permissions: PermissionString[]) => boolean
+  hasAllPermissions: (permissions: PermissionString[]) => boolean
+  updatePermissions: (permissions: string[]) => void
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -80,6 +70,37 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
       clearError: () => {
         set({ error: null })
+      },
+
+      hasPermission: (permission: PermissionString) => {
+        const currentUser = get().user
+        return currentUser?.permissions?.includes(permission) ?? false
+      },
+
+      hasRole: (role: UserRole) => {
+        const currentUser = get().user
+        return currentUser ? currentUser.role >= role : false
+      },
+
+      hasAnyPermission: (permissions: PermissionString[]) => {
+        const currentUser = get().user
+        if (!currentUser?.permissions) return false
+        return permissions.some(permission => currentUser.permissions.includes(permission))
+      },
+
+      hasAllPermissions: (permissions: PermissionString[]) => {
+        const currentUser = get().user
+        if (!currentUser?.permissions) return false
+        return permissions.every(permission => currentUser.permissions.includes(permission))
+      },
+
+      updatePermissions: (permissions: string[]) => {
+        const currentUser = get().user
+        if (currentUser) {
+          set({
+            user: { ...currentUser, permissions }
+          })
+        }
       },
     }),
     {

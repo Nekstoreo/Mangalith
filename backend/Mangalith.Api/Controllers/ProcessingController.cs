@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mangalith.Api.Authorization;
 using Mangalith.Application.Interfaces.Services;
 using Mangalith.Application.Services;
+using Mangalith.Domain.Constants;
 
 namespace Mangalith.Api.Controllers;
 
@@ -25,6 +27,7 @@ public class ProcessingController : ControllerBase
     }
 
     [HttpPost("{fileId}/process")]
+    [RequirePermission(Permissions.File.Process)]
     public async Task<IActionResult> ProcessFile(Guid fileId, [FromQuery] bool async = true)
     {
         try
@@ -50,6 +53,7 @@ public class ProcessingController : ControllerBase
     }
 
     [HttpPost("batch")]
+    [RequirePermission(Permissions.File.Process)]
     public async Task<IActionResult> ProcessBatch([FromBody] List<Guid> fileIds)
     {
         try
