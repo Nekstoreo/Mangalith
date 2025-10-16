@@ -22,6 +22,7 @@ import {
 import { useAuthStore, usePreferencesStore } from "@/stores"
 import { useApiData, useApiMutation } from "@/hooks"
 import { useProfileForm } from "@/hooks"
+import { RoleSpecificSettings, ReadingGoals } from "@/components/profile"
 
 interface UserProfile {
   id: string
@@ -147,6 +148,8 @@ export default function ProfilePage() {
           <TabsList>
             <TabsTrigger value="profile">Perfil</TabsTrigger>
             <TabsTrigger value="stats">Estadísticas</TabsTrigger>
+            <TabsTrigger value="goals">Metas y Logros</TabsTrigger>
+            <TabsTrigger value="role">Configuración de Rol</TabsTrigger>
             <TabsTrigger value="preferences">Preferencias</TabsTrigger>
           </TabsList>
 
@@ -320,6 +323,16 @@ export default function ProfilePage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Reading Goals Tab */}
+          <TabsContent value="goals" className="space-y-6">
+            <ReadingGoals />
+          </TabsContent>
+
+          {/* Role-Specific Settings Tab */}
+          <TabsContent value="role" className="space-y-6">
+            <RoleSpecificSettings />
           </TabsContent>
 
           {/* Preferences Tab */}

@@ -1,12 +1,18 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Note: For now, we're keeping authentication checks client-side since tokens are stored in localStorage
+// The auth middleware in lib/middleware/auth-middleware.ts can be used when tokens are moved to cookies
+
 // Routes that require authentication
 const protectedRoutes = [
   '/dashboard',
   '/profile',
   '/library',
   '/manga',
+  '/admin',
+  '/moderator',
+  '/upload'
 ]
 
 // Routes that should redirect to dashboard if already authenticated
@@ -18,13 +24,15 @@ const authRoutes = [
 // Public routes that don't need authentication
 const publicRoutes = [
   '/',
+  '/about',
+  '/contact'
 ]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // For now, don't check authentication in middleware since tokens are stored in localStorage
-  // This will be handled by client-side authentication checks
+  // This will be handled by client-side authentication checks using ProtectedRoute components
   const isProtectedRoute = protectedRoutes.some(route =>
     pathname.startsWith(route)
   )
@@ -48,6 +56,7 @@ export function middleware(request: NextRequest) {
 
   // For protected routes, we'll let the client handle authentication
   // This avoids middleware redirect loops when localStorage tokens exist
+  // Use ProtectedRoute components in pages for permission-based access control
   return NextResponse.next()
 }
 
