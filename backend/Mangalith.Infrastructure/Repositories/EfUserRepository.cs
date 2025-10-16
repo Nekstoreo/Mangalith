@@ -96,6 +96,11 @@ public class EfUserRepository : IUserRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Users.CountAsync(cancellationToken);
+    }
+
     // Método heredado para compatibilidad hacia atrás
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
     {
