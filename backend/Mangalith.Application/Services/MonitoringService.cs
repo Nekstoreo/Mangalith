@@ -64,8 +64,8 @@ public class MonitoringService : IMonitoringService
         {
             try
             {
-                await _auditLogRepository.AddAsync(new Domain.Entities.AuditLog(
-                    userId, action, resource, null, reason, "Unknown", "Unknown", false), cancellationToken);
+                await _auditLogRepository.CreateAsync(new Domain.Entities.AuditLog(
+                    userId, action, resource, "Unknown", false, null, reason, "Unknown"), cancellationToken);
             }
             catch (Exception ex)
             {

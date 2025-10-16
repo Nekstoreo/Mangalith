@@ -100,10 +100,4 @@ public class EfUserRepository : IUserRepository
     {
         return await _context.Users.CountAsync(cancellationToken);
     }
-
-    // Método heredado para compatibilidad hacia atrás
-    public async Task AddAsync(User user, CancellationToken cancellationToken = default)
-    {
-        await CreateAsync(user, cancellationToken);
-    }
 }

@@ -33,7 +33,7 @@ public class AuthService : IAuthService
         var passwordHash = _passwordHasher.Hash(request.Password);
         var user = new User(request.Email, passwordHash, request.FullName);
 
-        await _userRepository.AddAsync(user, cancellationToken);
+        await _userRepository.CreateAsync(user, cancellationToken);
 
         return await _jwtProvider.CreateTokenAsync(user, cancellationToken);
     }

@@ -101,7 +101,7 @@ public class HealthCheckService : IHealthCheckService
         {
             // Test audit log creation and retrieval
             var testUserId = Guid.NewGuid();
-            await _auditService.LogActionAsync(testUserId, "health.check", "system", success: true, cancellationToken: cancellationToken);
+            await _auditService.LogActionAsync(testUserId, "health.check", "system", "127.0.0.1", success: true, cancellationToken: cancellationToken);
 
             // Get recent audit statistics
             var fromDate = DateTime.UtcNow.AddDays(-1);
