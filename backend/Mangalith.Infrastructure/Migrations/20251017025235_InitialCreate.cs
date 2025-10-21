@@ -136,11 +136,11 @@ namespace Mangalith.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Endpoint = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Endpoint = table.Column<string>(type: "text", nullable: false),
                     RequestCount = table.Column<int>(type: "integer", nullable: false),
                     WindowStartUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LastRequestUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -281,6 +281,47 @@ namespace Mangalith.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Publications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MangaId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ContentRating = table.Column<int>(type: "integer", nullable: false),
+                    IsNsfw = table.Column<bool>(type: "boolean", nullable: false),
+                    ModeratorComments = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    RejectionReason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    SubmittedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReviewedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReviewedByUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Publications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Publications_Mangas_MangaId",
+                        column: x => x.MangaId,
+                        principalTable: "Mangas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Publications_Users_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Publications_Users_ReviewedByUserId",
+                        column: x => x.ReviewedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChapterPages",
                 columns: table => new
                 {
@@ -304,6 +345,74 @@ namespace Mangalith.Infrastructure.Migrations
                         principalTable: "Chapters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContentReports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PublicationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReportedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Category = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ModeratorResponse = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    ReviewedByUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    ReviewedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContentReports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ContentReports_Publications_PublicationId",
+                        column: x => x.PublicationId,
+                        principalTable: "Publications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ContentReports_Users_ReportedByUserId",
+                        column: x => x.ReportedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContentReports_Users_ReviewedByUserId",
+                        column: x => x.ReviewedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ModerationActions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PublicationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModeratorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ActionType = table.Column<int>(type: "integer", nullable: false),
+                    Comments = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    PreviousStatus = table.Column<int>(type: "integer", nullable: false),
+                    NewStatus = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ModerationActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ModerationActions_Publications_PublicationId",
+                        column: x => x.PublicationId,
+                        principalTable: "Publications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ModerationActions_Users_ModeratorId",
+                        column: x => x.ModeratorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -379,6 +488,36 @@ namespace Mangalith.Infrastructure.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContentReports_CreatedAtUtc",
+                table: "ContentReports",
+                column: "CreatedAtUtc");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContentReports_PublicationId",
+                table: "ContentReports",
+                column: "PublicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContentReports_PublicationId_Status",
+                table: "ContentReports",
+                columns: new[] { "PublicationId", "Status" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContentReports_ReportedByUserId",
+                table: "ContentReports",
+                column: "ReportedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContentReports_ReviewedByUserId",
+                table: "ContentReports",
+                column: "ReviewedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContentReports_Status",
+                table: "ContentReports",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MangaFiles_FileHash",
                 table: "MangaFiles",
                 column: "FileHash");
@@ -419,6 +558,26 @@ namespace Mangalith.Infrastructure.Migrations
                 column: "Title");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ModerationActions_CreatedAtUtc",
+                table: "ModerationActions",
+                column: "CreatedAtUtc");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModerationActions_ModeratorId",
+                table: "ModerationActions",
+                column: "ModeratorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModerationActions_PublicationId",
+                table: "ModerationActions",
+                column: "PublicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModerationActions_PublicationId_CreatedAtUtc",
+                table: "ModerationActions",
+                columns: new[] { "PublicationId", "CreatedAtUtc" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Permissions_Action",
                 table: "Permissions",
                 column: "Action");
@@ -435,30 +594,40 @@ namespace Mangalith.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RateLimitEntries_Endpoint",
-                table: "RateLimitEntries",
-                column: "Endpoint");
+                name: "IX_Publications_CreatedByUserId",
+                table: "Publications",
+                column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RateLimitEntries_LastRequestUtc",
-                table: "RateLimitEntries",
-                column: "LastRequestUtc");
+                name: "IX_Publications_MangaId",
+                table: "Publications",
+                column: "MangaId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_ReviewedAtUtc",
+                table: "Publications",
+                column: "ReviewedAtUtc");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_ReviewedByUserId",
+                table: "Publications",
+                column: "ReviewedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_Status",
+                table: "Publications",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_SubmittedAtUtc",
+                table: "Publications",
+                column: "SubmittedAtUtc");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RateLimitEntries_UserId",
                 table: "RateLimitEntries",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RateLimitEntries_UserId_Endpoint",
-                table: "RateLimitEntries",
-                columns: new[] { "UserId", "Endpoint" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RateLimitEntries_WindowStartUtc",
-                table: "RateLimitEntries",
-                column: "WindowStartUtc");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RolePermissions_PermissionId",
@@ -540,7 +709,13 @@ namespace Mangalith.Infrastructure.Migrations
                 name: "ChapterPages");
 
             migrationBuilder.DropTable(
+                name: "ContentReports");
+
+            migrationBuilder.DropTable(
                 name: "MangaFiles");
+
+            migrationBuilder.DropTable(
+                name: "ModerationActions");
 
             migrationBuilder.DropTable(
                 name: "RateLimitEntries");
@@ -556,6 +731,9 @@ namespace Mangalith.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Chapters");
+
+            migrationBuilder.DropTable(
+                name: "Publications");
 
             migrationBuilder.DropTable(
                 name: "Permissions");

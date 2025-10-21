@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mangalith.Infrastructure.Migrations
 {
     [DbContext(typeof(MangalithDbContext))]
-    [Migration("20251016015620_InitialCreate")]
+    [Migration("20251017025235_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -208,6 +208,61 @@ namespace Mangalith.Infrastructure.Migrations
                     b.ToTable("ChapterPages");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.ContentReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("ModeratorResponse")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("PublicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReportedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAtUtc");
+
+                    b.HasIndex("PublicationId");
+
+                    b.HasIndex("ReportedByUserId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("PublicationId", "Status");
+
+                    b.ToTable("ContentReports");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.Manga", b =>
                 {
                     b.Property<Guid>("Id")
@@ -364,6 +419,50 @@ namespace Mangalith.Infrastructure.Migrations
                     b.ToTable("MangaFiles");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.ModerationAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ActionType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Comments")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid>("ModeratorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("NewStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreviousStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("PublicationId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAtUtc");
+
+                    b.HasIndex("ModeratorId");
+
+                    b.HasIndex("PublicationId");
+
+                    b.HasIndex("PublicationId", "CreatedAtUtc");
+
+                    b.ToTable("ModerationActions");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -404,6 +503,72 @@ namespace Mangalith.Infrastructure.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.Publication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ContentRating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsNsfw")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MangaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ModeratorComments")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("ReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("SubmittedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("MangaId")
+                        .IsUnique();
+
+                    b.HasIndex("ReviewedAtUtc");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SubmittedAtUtc");
+
+                    b.ToTable("Publications");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.RateLimitEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -411,14 +576,11 @@ namespace Mangalith.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Endpoint")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("LastRequestUtc")
                         .HasColumnType("timestamp with time zone");
@@ -434,16 +596,7 @@ namespace Mangalith.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Endpoint");
-
-                    b.HasIndex("LastRequestUtc");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("WindowStartUtc");
-
-                    b.HasIndex("UserId", "Endpoint")
-                        .IsUnique();
 
                     b.ToTable("RateLimitEntries");
                 });
@@ -671,6 +824,32 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("Chapter");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.ContentReport", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.Publication", "Publication")
+                        .WithMany("Reports")
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Mangalith.Domain.Entities.User", "ReportedByUser")
+                        .WithMany("CreatedReports")
+                        .HasForeignKey("ReportedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Mangalith.Domain.Entities.User", "ReviewedByUser")
+                        .WithMany("ReviewedReports")
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Publication");
+
+                    b.Navigation("ReportedByUser");
+
+                    b.Navigation("ReviewedByUser");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.Manga", b =>
                 {
                     b.HasOne("Mangalith.Domain.Entities.User", "CreatedByUser")
@@ -698,6 +877,51 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("Manga");
 
                     b.Navigation("UploadedByUser");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.ModerationAction", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.User", "Moderator")
+                        .WithMany("ModerationActions")
+                        .HasForeignKey("ModeratorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Mangalith.Domain.Entities.Publication", "Publication")
+                        .WithMany("ModerationActions")
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Moderator");
+
+                    b.Navigation("Publication");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.Publication", b =>
+                {
+                    b.HasOne("Mangalith.Domain.Entities.User", "CreatedByUser")
+                        .WithMany("CreatedPublications")
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Mangalith.Domain.Entities.Manga", "Manga")
+                        .WithOne("Publication")
+                        .HasForeignKey("Mangalith.Domain.Entities.Publication", "MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Mangalith.Domain.Entities.User", "ReviewedByUser")
+                        .WithMany("ReviewedPublications")
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Manga");
+
+                    b.Navigation("ReviewedByUser");
                 });
 
             modelBuilder.Entity("Mangalith.Domain.Entities.RateLimitEntry", b =>
@@ -761,6 +985,8 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("Chapters");
 
                     b.Navigation("Files");
+
+                    b.Navigation("Publication");
                 });
 
             modelBuilder.Entity("Mangalith.Domain.Entities.Permission", b =>
@@ -768,11 +994,28 @@ namespace Mangalith.Infrastructure.Migrations
                     b.Navigation("RolePermissions");
                 });
 
+            modelBuilder.Entity("Mangalith.Domain.Entities.Publication", b =>
+                {
+                    b.Navigation("ModerationActions");
+
+                    b.Navigation("Reports");
+                });
+
             modelBuilder.Entity("Mangalith.Domain.Entities.User", b =>
                 {
                     b.Navigation("CreatedChapters");
 
                     b.Navigation("CreatedMangas");
+
+                    b.Navigation("CreatedPublications");
+
+                    b.Navigation("CreatedReports");
+
+                    b.Navigation("ModerationActions");
+
+                    b.Navigation("ReviewedPublications");
+
+                    b.Navigation("ReviewedReports");
 
                     b.Navigation("UploadedFiles");
                 });
