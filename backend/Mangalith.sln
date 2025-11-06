@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangalith.Application", "Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangalith.Infrastructure", "Mangalith.Infrastructure\Mangalith.Infrastructure.csproj", "{100FC5DF-655C-4227-8A61-CC25C3B04D30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangalith.Tests", "Mangalith.Tests\Mangalith.Tests.csproj", "{9CDC28AD-264D-4816-803E-1185217119CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{100FC5DF-655C-4227-8A61-CC25C3B04D30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{100FC5DF-655C-4227-8A61-CC25C3B04D30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{100FC5DF-655C-4227-8A61-CC25C3B04D30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CDC28AD-264D-4816-803E-1185217119CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CDC28AD-264D-4816-803E-1185217119CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CDC28AD-264D-4816-803E-1185217119CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CDC28AD-264D-4816-803E-1185217119CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
