@@ -11,4 +11,6 @@ public class FileUploadResponse
     public MangaFileStatus Status { get; set; }
     public DateTime UploadedAt { get; set; }
     public string Message { get; set; } = string.Empty;
+    public Guid? MangaId { get; set; }
+    public Guid? PublicationId { get; set; }
 }
