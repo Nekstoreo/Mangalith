@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json;
 using Mangalith.Api.Contracts;
 using Mangalith.Application.Common.Exceptions;
+using Mangalith.Application.Common.Models;
 
 namespace Mangalith.Api.Middleware;
 
@@ -72,6 +73,31 @@ public class ExceptionHandlingMiddleware
         {
             context.Response.Headers["Retry-After"] = rateLimitException.RetryAfter.TotalSeconds.ToString("F0");
             await WriteProblemAsync(context, HttpStatusCode.TooManyRequests, rateLimitException.Code, rateLimitException.Message);
+        }
+        catch (PublicationException publicationException)
+        {
+            _logger.LogWarning("Publication workflow error: {Code} - {Message}", publicationException.Code, publicationException.Message);
+            var userFriendlyMessage = ErrorMessages.GetUserFriendlyMessage(publicationException.Code);
+            await WriteProblemAsync(context, HttpStatusCode.BadRequest, publicationException.Code, userFriendlyMessage);
+        }
+        catch (ModerationException moderationException)
+        {
+            _logger.LogWarning("Moderation workflow error: {Code} - {Message}", moderationException.Code, moderationException.Message);
+            var userFriendlyMessage = ErrorMessages.GetUserFriendlyMessage(moderationException.Code);
+            await WriteProblemAsync(context, HttpStatusCode.BadRequest, moderationException.Code, userFriendlyMessage);
+        }
+        catch (ContentReportException contentReportException)
+        {
+            _logger.LogWarning("Content report error: {Code} - {Message}", contentReportException.Code, contentReportException.Message);
+            var userFriendlyMessage = ErrorMessages.GetUserFriendlyMessage(contentReportException.Code);
+            await WriteProblemAsync(context, HttpStatusCode.BadRequest, contentReportException.Code, userFriendlyMessage);
+        }
+        catch (NotificationDeliveryException notificationException)
+        {
+            _logger.LogError("Notification delivery failed: {NotificationType} to {Recipient} - {Message}", 
+                notificationException.NotificationType, notificationException.Recipient, notificationException.Message);
+            var userFriendlyMessage = ErrorMessages.GetUserFriendlyMessage(notificationException.Code);
+            await WriteProblemAsync(context, HttpStatusCode.InternalServerError, notificationException.Code, userFriendlyMessage);
         }
         catch (Exception exception)
         {
