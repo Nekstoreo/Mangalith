@@ -14,7 +14,7 @@ public class ModerationService : IModerationService
     private readonly IModerationActionRepository _moderationActionRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPublicationService _publicationService;
-    private readonly PublicationValidationService _validationService;
+    private readonly IPublicationValidationService _validationService;
     private readonly ILogger<ModerationService> _logger;
 
     public ModerationService(
@@ -22,7 +22,7 @@ public class ModerationService : IModerationService
         IModerationActionRepository moderationActionRepository,
         IUserRepository userRepository,
         IPublicationService publicationService,
-        PublicationValidationService validationService,
+        IPublicationValidationService validationService,
         ILogger<ModerationService> logger)
     {
         _publicationRepository = publicationRepository;

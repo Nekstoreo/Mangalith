@@ -13,14 +13,14 @@ public class ContentReportService : IContentReportService
     private readonly IContentReportRepository _contentReportRepository;
     private readonly IPublicationRepository _publicationRepository;
     private readonly IUserRepository _userRepository;
-    private readonly PublicationValidationService _validationService;
+    private readonly IPublicationValidationService _validationService;
     private readonly ILogger<ContentReportService> _logger;
 
     public ContentReportService(
         IContentReportRepository contentReportRepository,
         IPublicationRepository publicationRepository,
         IUserRepository userRepository,
-        PublicationValidationService validationService,
+        IPublicationValidationService validationService,
         ILogger<ContentReportService> logger)
     {
         _contentReportRepository = contentReportRepository;
