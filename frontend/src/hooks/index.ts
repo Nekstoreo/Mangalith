@@ -26,3 +26,5 @@ export {
   useResourcePermission,
   usePermissionWithLoading,
 } from './use-permission'
+
+export { useManga } from './useManga'
