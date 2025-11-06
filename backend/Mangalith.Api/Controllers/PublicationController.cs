@@ -209,7 +209,37 @@ public class PublicationController : ControllerBase
         {
             var userId = GetUserIdFromToken();
             var result = await _publicationService.GetUserPublicationsAsync(userId, page, pageSize, cancellationToken);
-            return Ok(result);
+
+            // Mapear a un DTO simple para evitar ciclos de serialización
+            var response = new
+            {
+                items = result.Items.Select(p => new PublicationListItemResponse
+                {
+                    Id = p.Id,
+                    MangaId = p.MangaId,
+                    Status = p.Status.ToString(),
+                    ContentRating = p.ContentRating.ToString(),
+                    IsNsfw = p.IsNsfw,
+                    CreatedAtUtc = p.CreatedAtUtc,
+                    UpdatedAtUtc = p.UpdatedAtUtc,
+                    SubmittedAtUtc = p.SubmittedAtUtc,
+                    ReviewedAtUtc = p.ReviewedAtUtc,
+                    Manga = p.Manga is null ? null : new PublicationListItemResponse.MangaSummary
+                    {
+                        Id = p.Manga.Id,
+                        Title = p.Manga.Title,
+                        ChapterCount = p.Manga.ChapterCount
+                    }
+                }),
+                result.TotalCount,
+                result.Page,
+                result.PageSize,
+                result.TotalPages,
+                result.HasPreviousPage,
+                result.HasNextPage
+            };
+
+            return Ok(response);
         }
         catch (Exception ex)
         {
@@ -232,7 +262,37 @@ public class PublicationController : ControllerBase
         try
         {
             var result = await _publicationService.GetPublicationsByStatusAsync(status, page, pageSize, cancellationToken);
-            return Ok(result);
+
+            // Mapear a un DTO simple para evitar ciclos de serialización
+            var response = new
+            {
+                items = result.Items.Select(p => new PublicationListItemResponse
+                {
+                    Id = p.Id,
+                    MangaId = p.MangaId,
+                    Status = p.Status.ToString(),
+                    ContentRating = p.ContentRating.ToString(),
+                    IsNsfw = p.IsNsfw,
+                    CreatedAtUtc = p.CreatedAtUtc,
+                    UpdatedAtUtc = p.UpdatedAtUtc,
+                    SubmittedAtUtc = p.SubmittedAtUtc,
+                    ReviewedAtUtc = p.ReviewedAtUtc,
+                    Manga = p.Manga is null ? null : new PublicationListItemResponse.MangaSummary
+                    {
+                        Id = p.Manga.Id,
+                        Title = p.Manga.Title,
+                        ChapterCount = p.Manga.ChapterCount
+                    }
+                }),
+                result.TotalCount,
+                result.Page,
+                result.PageSize,
+                result.TotalPages,
+                result.HasPreviousPage,
+                result.HasNextPage
+            };
+
+            return Ok(response);
         }
         catch (Exception ex)
         {
@@ -247,6 +307,27 @@ public class PublicationController : ControllerBase
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             throw new UnauthorizedAccessException("Invalid or missing user ID in token");
         return userId;
+    }
+}
+
+public class PublicationListItemResponse
+{
+    public Guid Id { get; set; }
+    public Guid MangaId { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string ContentRating { get; set; } = string.Empty;
+    public bool IsNsfw { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+    public DateTime UpdatedAtUtc { get; set; }
+    public DateTime? SubmittedAtUtc { get; set; }
+    public DateTime? ReviewedAtUtc { get; set; }
+    public MangaSummary? Manga { get; set; }
+
+    public class MangaSummary
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public int ChapterCount { get; set; }
     }
 }
 
