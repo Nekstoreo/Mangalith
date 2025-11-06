@@ -119,11 +119,11 @@ public class Publication
     }
 
     /// <summary>
-    /// Archiva la publicación (solo desde estados publicados o bajo revisión).
+    /// Archiva la publicación desde estados permitidos (Draft, NeedsRevision, Rejected, Published, o UnderReview).
     /// </summary>
     public void Archive()
     {
-        if (Status != PublicationStatus.Published && Status != PublicationStatus.UnderReview)
+        if (!CanTransitionTo(PublicationStatus.Archived))
         {
             throw new InvalidOperationException($"Cannot archive publication with status {Status}");
         }
@@ -159,9 +159,7 @@ public class Publication
             (PublicationStatus.InReview, PublicationStatus.Rejected) => true,
             (PublicationStatus.InReview, PublicationStatus.NeedsRevision) => true,
             (PublicationStatus.NeedsRevision, PublicationStatus.InReview) => true,
-            (PublicationStatus.NeedsRevision, PublicationStatus.Draft) => true,
             (PublicationStatus.NeedsRevision, PublicationStatus.Archived) => true,
-            (PublicationStatus.Rejected, PublicationStatus.Draft) => true,
             (PublicationStatus.Rejected, PublicationStatus.Archived) => true,
             (PublicationStatus.Published, PublicationStatus.Archived) => true,
             (PublicationStatus.Published, PublicationStatus.UnderReview) => true,
