@@ -276,7 +276,7 @@ export const AdminDashboard: React.FC = () => {
           <CardTitle>Acciones Rápidas</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Button 
               onClick={() => router.push('/admin/users')}
               className="flex items-center gap-2"
@@ -299,6 +299,14 @@ export const AdminDashboard: React.FC = () => {
             >
               <FileText className="h-4 w-4" />
               Ver Auditoría
+            </Button>
+            <Button 
+              onClick={() => router.push('/admin/analytics')}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <TrendingUp className="h-4 w-4" />
+              Analíticas
             </Button>
           </div>
         </CardContent>
