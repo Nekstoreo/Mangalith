@@ -1,257 +1,561 @@
 {
 	"info": {
 		"_postman_id": "4df75c73-741a-4542-b8f5-ea37224b296d",
-		"name": "Mangalith API",
-		"description": "Colección de Postman para los endpoints de la API de Mangalith",
+		"name": "Mangalith API - Complete Collection",
+		"description": "Comprehensive Postman collection for all Mangalith API endpoints including authentication, file management, manga operations, moderation, analytics, and administrative functions.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "43705198",
-		"_collection_link": "https://nestor-9731994.postman.co/workspace/Nestor's-Workspace~ca5ad7a8-5f82-4ca4-8762-61a8b214cd7c/collection/43705198-4df75c73-741a-4542-b8f5-ea37224b296d?action=share&source=collection_link&creator=43705198"
+		"_exporter_id": "43705198"
 	},
 	"item": [
 		{
-			"name": "Health Check",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/health",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"health"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Register User",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\",\n  \"confirmPassword\": \"{{password}}\",\n  \"fullName\": \"Test User\"\n}"
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/register",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"register"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login",
-			"event": [
+			"name": "Health & System",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"if (pm.response.code === 200) {",
-							"    const response = pm.response.json();",
-							"    pm.collectionVariables.set('accessToken', response.accessToken);",
-							"}"
+					"name": "Basic Health Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
 						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\"\n}"
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/login",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Profile",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{accessToken}}"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/api/profile/me",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"profile",
-						"me"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Upload File",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"if (pm.response.code === 201) {",
-							"    const response = pm.response.json();",
-							"    pm.collectionVariables.set('fileId', response.fileId);",
-							"}"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{accessToken}}"
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": "./backend/Mangalith.Api/test-files/sample.cbr"
-						},
-						{
-							"key": "title",
-							"value": "Test Manga Title",
-							"type": "text"
-						},
-						{
-							"key": "description",
-							"value": "This is a test manga upload",
-							"type": "text"
+						"url": {
+							"raw": "{{baseUrl}}/api/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
 						}
-					]
+					}
 				},
-				"url": {
-					"raw": "{{apiBase}}/api/files/upload",
-					"host": [
-						"{{apiBase}}"
-					],
-					"path": [
-						"api",
-						"files",
-						"upload"
-					]
+				{
+					"name": "Detailed Health Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/health/detailed",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"health",
+								"detailed"
+							]
+						}
+					}
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Get Uploaded File",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{accessToken}}"
-					}
-				],
-				"url": {
-					"raw": "{{apiBase}}/api/files/{{fileId}}",
-					"host": [
-						"{{apiBase}}"
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.accessToken) {",
+									"        pm.collectionVariables.set('accessToken', response.accessToken);",
+									"    }",
+									"    if (response.user && response.user.id) {",
+									"        pm.collectionVariables.set('userId', response.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"api",
-						"files",
-						"{{fileId}}"
-					]
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\",\n  \"confirmPassword\": \"{{password}}\",\n  \"fullName\": \"Test User\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', response.accessToken);",
+									"    if (response.user && response.user.id) {",
+									"        pm.collectionVariables.set('userId', response.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Delete Uploaded File",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{accessToken}}"
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Get Current Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"me"
+							]
+						}
 					}
-				],
-				"url": {
-					"raw": "{{apiBase}}/api/files/{{fileId}}",
-					"host": [
-						"{{apiBase}}"
-					],
-					"path": [
-						"api",
-						"files",
-						"{{fileId}}"
-					]
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "File Management",
+			"item": [
+				{
+					"name": "Upload File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('fileId', response.fileId);",
+									"    if (response.publicationId) {",
+									"        pm.collectionVariables.set('publicationId', response.publicationId);",
+									"    }",
+									"    if (response.mangaId) {",
+									"        pm.collectionVariables.set('mangaId', response.mangaId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-files/sample.cbr"
+								},
+								{
+									"key": "title",
+									"value": "Test Manga Title",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a test manga upload",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/files/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"upload"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get File",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/files/{{fileId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"{{fileId}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Manga Management",
+			"item": [
+				{
+					"name": "Get Public Mangas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/manga/public",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manga",
+								"public"
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Mangas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/manga/search?q={{searchTerm}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manga",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "{{searchTerm}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get My Mangas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/manga/my-mangas",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manga",
+								"my-mangas"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Publications",
+			"item": [
+				{
+					"name": "Create Publication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.Id) {",
+									"        pm.collectionVariables.set('publicationId', response.Id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/publication/{{mangaId}}/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"publication",
+								"{{mangaId}}",
+								"create"
+							]
+						}
+					}
+				},
+				{
+					"name": "Submit for Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/publication/{{publicationId}}/submit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"publication",
+								"{{publicationId}}",
+								"submit"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Content Reports",
+			"item": [
+				{
+					"name": "Create Content Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.Id) {",
+									"        pm.collectionVariables.set('reportId', response.Id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicationId\": \"{{publicationId}}\",\n  \"category\": \"InappropriateContent\",\n  \"description\": \"This content violates community guidelines\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/contentreport/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"contentreport",
+								"create"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Quota Management",
+			"item": [
+				{
+					"name": "Get Quota Usage",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/quota/usage",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"quota",
+								"usage"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Quota Limits",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/quota/limits",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"quota",
+								"limits"
+							]
+						}
+					}
+				}
+			]
 		}
 	],
 	"variable": [
 		{
 			"key": "baseUrl",
 			"value": "https://localhost:5001",
-			"type": "string"
-		},
-		{
-			"key": "apiBase",
-			"value": "http://localhost:5000",
 			"type": "string"
 		},
 		{
@@ -265,12 +569,67 @@
 			"type": "string"
 		},
 		{
+			"key": "searchTerm",
+			"value": "manga",
+			"type": "string"
+		},
+		{
 			"key": "accessToken",
 			"value": "",
 			"type": "string"
 		},
 		{
+			"key": "moderatorToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "moderatorId",
+			"value": "",
+			"type": "string"
+		},
+		{
 			"key": "fileId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "mangaId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "publicationId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "reportId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "invitationId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "invitationToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "auditLogId",
 			"value": "",
 			"type": "string"
 		}
