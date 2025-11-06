@@ -1,5 +1,6 @@
 using Mangalith.Application.Common.Exceptions;
 using Mangalith.Application.Interfaces.Repositories;
+using Mangalith.Application.Interfaces.Services;
 using Mangalith.Domain.Entities;
 using Mangalith.Domain.Enums;
 
@@ -8,7 +9,7 @@ namespace Mangalith.Application.Services;
 /// <summary>
 /// Service for validating publication workflow operations
 /// </summary>
-public class PublicationValidationService
+public class PublicationValidationService : IPublicationValidationService
 {
     private readonly IMangaRepository _mangaRepository;
     private readonly IUserRepository _userRepository;
@@ -73,11 +74,13 @@ public class PublicationValidationService
         }
 
         // Verify chapters have pages
+        // Nota: consideramos válido si al menos un capítulo reporta PageCount > 0,
+        // para evitar depender de la carga explícita de la colección Pages.
         var hasValidChapters = false;
         foreach (var chapter in manga.Chapters)
         {
             var chapterWithPages = await _chapterRepository.GetByIdAsync(chapter.Id, cancellationToken);
-            if (chapterWithPages?.Pages != null && chapterWithPages.Pages.Any())
+            if ((chapterWithPages?.Pages?.Any() ?? false) || (chapterWithPages?.PageCount ?? 0) > 0)
             {
                 hasValidChapters = true;
                 break;
