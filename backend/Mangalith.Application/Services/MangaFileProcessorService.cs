@@ -20,6 +20,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
     private readonly IImageProcessorService _imageProcessor;
     private readonly IMetadataExtractorService _metadataExtractor;
     private readonly IQuotaService _quotaService;
+    private readonly IPublicationService _publicationService;
     private readonly ILogger<MangaFileProcessorService> _logger;
     private readonly FileUploadOptions _options;
 
@@ -32,6 +33,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         IImageProcessorService imageProcessor,
         IMetadataExtractorService metadataExtractor,
         IQuotaService quotaService,
+        IPublicationService publicationService,
         ILogger<MangaFileProcessorService> logger,
         IOptions<FileUploadOptions> options)
     {
@@ -41,6 +43,7 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         _imageProcessor = imageProcessor;
         _metadataExtractor = metadataExtractor;
         _quotaService = quotaService;
+        _publicationService = publicationService;
         _logger = logger;
         _options = options.Value;
     }
@@ -403,6 +406,17 @@ public class MangaFileProcessorService : IMangaFileProcessorService
         
         // Actualizar cuotas del usuario
         await _quotaService.TrackMangaCreationAsync(mangaFile.UploadedByUserId, cancellationToken);
+        
+        // Crear publicación automáticamente para el nuevo manga
+        try
+        {
+            await _publicationService.CreatePublicationAsync(manga.Id, mangaFile.UploadedByUserId, cancellationToken);
+            _logger.LogInformation("Created publication for new manga {MangaId}", manga.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to create publication for manga {MangaId}, continuing without publication", manga.Id);
+        }
         
         _logger.LogInformation("Created new manga {MangaId}: {Title}", manga.Id, manga.Title);
         

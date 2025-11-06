@@ -23,6 +23,15 @@ public static class DependencyInjection
         services.AddScoped<IQuotaService, QuotaService>();
         services.AddScoped<IHealthCheckService, HealthCheckService>();
         services.AddScoped<IMonitoringService, MonitoringService>();
+        services.AddScoped<IPublicationService, PublicationService>();
+        services.AddScoped<IModerationService, ModerationService>();
+        services.AddScoped<IContentReportService, ContentReportService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IAnalyticsService, AnalyticsService>();
+        services.AddScoped<IMangaService, MangaService>();
+        
+        // Validation services
+        services.AddScoped<PublicationValidationService>();
         
         // Servicios en segundo plano
         services.AddSingleton<BackgroundFileProcessorService>();
