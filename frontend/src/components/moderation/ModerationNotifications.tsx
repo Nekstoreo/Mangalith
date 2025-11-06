@@ -367,14 +367,3 @@ export function useModerationNotifications() {
     dismissToast,
   }
 }
-
-function getPriorityColor(priority: ModerationNotification['priority']) {
-  switch (priority) {
-    case 'high':
-      return 'border-l-red-500 bg-red-50'
-    case 'medium':
-      return 'border-l-yellow-500 bg-yellow-50'
-    default:
-      return 'border-l-blue-500 bg-blue-50'
-  }
-}
