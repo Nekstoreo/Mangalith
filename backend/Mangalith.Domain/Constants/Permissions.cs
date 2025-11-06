@@ -62,6 +62,35 @@ public static class Permissions
         public const string Moderate = "comment.moderate";
     }
 
+    public static class Publication
+    {
+        public const string Create = "publication.create";
+        public const string Submit = "publication.submit";
+        public const string Review = "publication.review";
+        public const string Approve = "publication.approve";
+        public const string Reject = "publication.reject";
+        public const string Archive = "publication.archive";
+        public const string ViewQueue = "publication.view_queue";
+        public const string ViewAll = "publication.view_all";
+        public const string BulkActions = "publication.bulk_actions";
+    }
+
+    public static class ContentReport
+    {
+        public const string Create = "content_report.create";
+        public const string Review = "content_report.review";
+        public const string ViewAll = "content_report.view_all";
+        public const string Resolve = "content_report.resolve";
+    }
+
+    public static class Moderation
+    {
+        public const string ViewStatistics = "moderation.view_statistics";
+        public const string ViewHistory = "moderation.view_history";
+        public const string ManageQueue = "moderation.manage_queue";
+        public const string BulkActions = "moderation.bulk_actions";
+    }
+
     // Método para obtener todas las definiciones de permisos
     public static Dictionary<string, string> GetAllPermissions()
     {
@@ -113,7 +142,30 @@ public static class Permissions
             { Comment.Read, "Ver comentarios" },
             { Comment.Update, "Actualizar comentarios propios" },
             { Comment.Delete, "Eliminar comentarios propios" },
-            { Comment.Moderate, "Moderar comentarios" }
+            { Comment.Moderate, "Moderar comentarios" },
+
+            // Publication permissions
+            { Publication.Create, "Crear publicaciones" },
+            { Publication.Submit, "Enviar publicaciones para revisión" },
+            { Publication.Review, "Revisar publicaciones" },
+            { Publication.Approve, "Aprobar publicaciones" },
+            { Publication.Reject, "Rechazar publicaciones" },
+            { Publication.Archive, "Archivar publicaciones" },
+            { Publication.ViewQueue, "Ver cola de moderación" },
+            { Publication.ViewAll, "Ver todas las publicaciones" },
+            { Publication.BulkActions, "Realizar acciones en lote sobre publicaciones" },
+
+            // Content Report permissions
+            { ContentReport.Create, "Crear reportes de contenido" },
+            { ContentReport.Review, "Revisar reportes de contenido" },
+            { ContentReport.ViewAll, "Ver todos los reportes" },
+            { ContentReport.Resolve, "Resolver reportes" },
+
+            // Moderation permissions
+            { Moderation.ViewStatistics, "Ver estadísticas de moderación" },
+            { Moderation.ViewHistory, "Ver historial de moderación" },
+            { Moderation.ManageQueue, "Gestionar cola de moderación" },
+            { Moderation.BulkActions, "Realizar acciones en lote de moderación" }
         };
     }
 }
