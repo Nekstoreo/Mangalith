@@ -1,3 +1,5 @@
+using Mangalith.Domain.Enums;
+
 namespace Mangalith.Domain.Entities;
 
 public class Manga
@@ -26,6 +28,7 @@ public class Manga
     public User CreatedByUser { get; private set; } = null!;
     public ICollection<Chapter> Chapters { get; private set; } = new List<Chapter>();
     public ICollection<MangaFile> Files { get; private set; } = new List<MangaFile>();
+    public Publication? Publication { get; private set; }
 
     private Manga()
     {
@@ -113,6 +116,37 @@ public class Manga
     {
         IsPublic = isPublic;
         UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Determina si el manga es visible públicamente basado en el estado de publicación.
+    /// Para compatibilidad hacia atrás, si no hay publicación, usa IsPublic.
+    /// </summary>
+    public bool IsVisibleToPublic()
+    {
+        // Si hay una publicación, usar su estado
+        if (Publication != null)
+        {
+            return Publication.Status == PublicationStatus.Published;
+        }
+        
+        // Para compatibilidad hacia atrás con mangas existentes sin publicación
+        return IsPublic;
+    }
+
+    /// <summary>
+    /// Determina si el manga es visible para un usuario específico.
+    /// </summary>
+    public bool IsVisibleToUser(Guid? userId)
+    {
+        // El creador siempre puede ver su propio manga
+        if (userId.HasValue && CreatedByUserId == userId.Value)
+        {
+            return true;
+        }
+
+        // Para otros usuarios, usar la lógica de visibilidad pública
+        return IsVisibleToPublic();
     }
 
     public void UpdateChapterCount(int count)

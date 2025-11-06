@@ -19,6 +19,11 @@ public class User
     public ICollection<Manga> CreatedMangas { get; private set; } = new List<Manga>();
     public ICollection<Chapter> CreatedChapters { get; private set; } = new List<Chapter>();
     public ICollection<MangaFile> UploadedFiles { get; private set; } = new List<MangaFile>();
+    public ICollection<Publication> CreatedPublications { get; private set; } = new List<Publication>();
+    public ICollection<Publication> ReviewedPublications { get; private set; } = new List<Publication>();
+    public ICollection<ModerationAction> ModerationActions { get; private set; } = new List<ModerationAction>();
+    public ICollection<ContentReport> CreatedReports { get; private set; } = new List<ContentReport>();
+    public ICollection<ContentReport> ReviewedReports { get; private set; } = new List<ContentReport>();
 
     private User()
     {
