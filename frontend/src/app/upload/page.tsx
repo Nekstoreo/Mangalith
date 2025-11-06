@@ -26,7 +26,7 @@ export default function UploadPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Subir Archivos de Manga</h1>
           <p className="text-muted-foreground">
-            Sube tus archivos de manga en formato CBZ, CBR, ZIP o RAR para empezar a construir tu biblioteca personal.
+            Sube tus archivos de manga en formato CBZ, CBR, ZIP o RAR. Los archivos se procesarán automáticamente y se creará una publicación en estado borrador que podrás enviar para revisión.
           </p>
         </div>
 
