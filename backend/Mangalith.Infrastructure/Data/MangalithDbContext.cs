@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Mangalith.Domain.Entities;
+using Mangalith.Domain.Enums;
 
 namespace Mangalith.Infrastructure.Data;
 
@@ -21,6 +22,10 @@ public class MangalithDbContext : DbContext
     public DbSet<UserInvitation> UserInvitations => Set<UserInvitation>();
     public DbSet<UserQuota> UserQuotas => Set<UserQuota>();
     public DbSet<RateLimitEntry> RateLimitEntries => Set<RateLimitEntry>();
+    public DbSet<Publication> Publications => Set<Publication>();
+    public DbSet<ModerationAction> ModerationActions => Set<ModerationAction>();
+    public DbSet<ContentReport> ContentReports => Set<ContentReport>();
+    public DbSet<Domain.Entities.SystemAlert> SystemAlerts => Set<Domain.Entities.SystemAlert>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -396,28 +401,166 @@ public class MangalithDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Configurar entidad RateLimitEntry
-        modelBuilder.Entity<RateLimitEntry>(entity =>
+        // Configurar entidad Publication
+        modelBuilder.Entity<Publication>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasIndex(e => new { e.UserId, e.Endpoint }).IsUnique();
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.Endpoint);
-            entity.HasIndex(e => e.WindowStartUtc);
-            entity.HasIndex(e => e.LastRequestUtc);
+            entity.HasIndex(e => e.MangaId).IsUnique();
+            entity.HasIndex(e => e.CreatedByUserId);
+            entity.HasIndex(e => e.ReviewedByUserId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.SubmittedAtUtc);
+            entity.HasIndex(e => e.ReviewedAtUtc);
             
-            entity.Property(e => e.Endpoint)
+            entity.Property(e => e.Status)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.ContentRating)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.ModeratorComments)
+                .HasMaxLength(2000);
+            
+            entity.Property(e => e.RejectionReason)
+                .HasMaxLength(500);
+            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.Property(e => e.UpdatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Relaciones
+            entity.HasOne(e => e.Manga)
+                .WithOne(m => m.Publication)
+                .HasForeignKey<Publication>(e => e.MangaId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany(u => u.CreatedPublications)
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(e => e.ReviewedByUser)
+                .WithMany(u => u.ReviewedPublications)
+                .HasForeignKey(e => e.ReviewedByUserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+        });
+
+        // Configurar entidad ModerationAction
+        modelBuilder.Entity<ModerationAction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.PublicationId);
+            entity.HasIndex(e => e.ModeratorId);
+            entity.HasIndex(e => e.CreatedAtUtc);
+            entity.HasIndex(e => new { e.PublicationId, e.CreatedAtUtc });
+            
+            entity.Property(e => e.ActionType)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.Comments)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(2000);
+            
+            entity.Property(e => e.PreviousStatus)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.NewStatus)
+                .HasConversion<int>();
             
             entity.Property(e => e.CreatedAtUtc)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             // Relaciones
-            entity.HasOne(e => e.User)
-                .WithMany()
-                .HasForeignKey(e => e.UserId)
+            entity.HasOne(e => e.Publication)
+                .WithMany(p => p.ModerationActions)
+                .HasForeignKey(e => e.PublicationId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.Moderator)
+                .WithMany(u => u.ModerationActions)
+                .HasForeignKey(e => e.ModeratorId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configurar entidad ContentReport
+        modelBuilder.Entity<ContentReport>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.PublicationId);
+            entity.HasIndex(e => e.ReportedByUserId);
+            entity.HasIndex(e => e.ReviewedByUserId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.CreatedAtUtc);
+            entity.HasIndex(e => new { e.PublicationId, e.Status });
+            
+            entity.Property(e => e.Category)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(2000);
+            
+            entity.Property(e => e.Status)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.ModeratorResponse)
+                .HasMaxLength(1000);
+            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Relaciones
+            entity.HasOne(e => e.Publication)
+                .WithMany(p => p.Reports)
+                .HasForeignKey(e => e.PublicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.ReportedByUser)
+                .WithMany(u => u.CreatedReports)
+                .HasForeignKey(e => e.ReportedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(e => e.ReviewedByUser)
+                .WithMany(u => u.ReviewedReports)
+                .HasForeignKey(e => e.ReviewedByUserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+        });
+
+        // Configurar entidad SystemAlert
+        modelBuilder.Entity<Domain.Entities.SystemAlert>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Type);
+            entity.HasIndex(e => e.Severity);
+            entity.HasIndex(e => e.IsResolved);
+            entity.HasIndex(e => e.CreatedAt);
+            
+            entity.Property(e => e.Type)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.Severity)
+                .HasConversion<int>();
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(2000);
+            
+            entity.Property(e => e.Metadata)
+                .HasColumnType("jsonb");
+            
+            entity.Property(e => e.ResolvedBy)
+                .HasMaxLength(100);
+            
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
     }
 
