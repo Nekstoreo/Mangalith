@@ -7,6 +7,7 @@ using Mangalith.Application.Common.Exceptions;
 using Mangalith.Application.Contracts.Files;
 using Mangalith.Application.Interfaces.Services;
 using Mangalith.Domain.Constants;
+using Mangalith.Domain.Enums;
 
 namespace Mangalith.Api.Controllers;
 
@@ -16,11 +17,13 @@ namespace Mangalith.Api.Controllers;
 public class FilesController : ControllerBase
 {
     private readonly IFileService _fileService;
+    private readonly IPublicationService _publicationService;
     private readonly ILogger<FilesController> _logger;
 
-    public FilesController(IFileService fileService, ILogger<FilesController> logger)
+    public FilesController(IFileService fileService, IPublicationService publicationService, ILogger<FilesController> logger)
     {
         _fileService = fileService;
+        _publicationService = publicationService;
         _logger = logger;
     }
 
@@ -42,6 +45,39 @@ public class FilesController : ControllerBase
             _logger.LogInformation("File upload request from user {UserId} for file {FileName}", userId, request.File?.FileName);
 
             var response = await _fileService.UploadFileAsync(request, userId, cancellationToken);
+            
+            // Task 16: Auto-create Publication record on successful file upload
+            try
+            {
+                // Use FileId as MangaId reference for now
+                var publication = await _publicationService.CreatePublicationAsync(
+                    response.FileId,
+                    userId,
+                    cancellationToken
+                );
+                
+                _logger.LogInformation(
+                    "Auto-created publication {PublicationId} for file {FileId} uploaded by user {UserId}",
+                    publication.Id,
+                    response.FileId,
+                    userId
+                );
+
+                // Include publication ID in response for frontend
+                response.PublicationId = publication.Id;
+                response.MangaId = response.FileId;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Failed to auto-create publication for file {FileId}. " +
+                    "File uploaded successfully but publication creation failed. " +
+                    "User may need to create publication manually.",
+                    response.FileId
+                );
+                // Don't throw - file upload succeeded, publication creation is non-blocking
+            }
             
             _logger.LogInformation("File upload successful: {FileId}", response.FileId);
             return CreatedAtAction(nameof(GetFile), new { id = response.FileId }, response);
