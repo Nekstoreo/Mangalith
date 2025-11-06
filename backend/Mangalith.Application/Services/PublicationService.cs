@@ -14,7 +14,7 @@ public class PublicationService : IPublicationService
     private readonly IMangaRepository _mangaRepository;
     private readonly IUserRepository _userRepository;
     private readonly IChapterRepository _chapterRepository;
-    private readonly PublicationValidationService _validationService;
+    private readonly IPublicationValidationService _validationService;
     private readonly ILogger<PublicationService> _logger;
 
     public PublicationService(
@@ -22,7 +22,7 @@ public class PublicationService : IPublicationService
         IMangaRepository mangaRepository,
         IUserRepository userRepository,
         IChapterRepository chapterRepository,
-        PublicationValidationService validationService,
+        IPublicationValidationService validationService,
         ILogger<PublicationService> logger)
     {
         _publicationRepository = publicationRepository;
