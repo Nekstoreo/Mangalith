@@ -16,7 +16,8 @@ public static class RolePermissions
             Permissions.User.UpdateProfile,
             Permissions.Comment.Create,
             Permissions.Comment.Read,
-            Permissions.Comment.Update // Solo sus propios comentarios
+            Permissions.Comment.Update, // Solo sus propios comentarios
+            Permissions.ContentReport.Create // Puede reportar contenido
         },
         
         [UserRole.Uploader] = new[]
@@ -30,6 +31,7 @@ public static class RolePermissions
             Permissions.Comment.Create,
             Permissions.Comment.Read,
             Permissions.Comment.Update,
+            Permissions.ContentReport.Create,
             
             // Permisos adicionales de Uploader
             Permissions.Manga.Create,
@@ -42,7 +44,11 @@ public static class RolePermissions
             Permissions.Chapter.Publish,
             Permissions.File.Upload,
             Permissions.File.Delete, // Solo sus propios archivos
-            Permissions.File.Process
+            Permissions.File.Process,
+            
+            // Permisos de publicación para Uploader
+            Permissions.Publication.Create,
+            Permissions.Publication.Submit // Puede enviar sus publicaciones
         },
         
         [UserRole.Moderator] = new[]
@@ -56,6 +62,7 @@ public static class RolePermissions
             Permissions.Comment.Create,
             Permissions.Comment.Read,
             Permissions.Comment.Update,
+            Permissions.ContentReport.Create,
             Permissions.Manga.Create,
             Permissions.Manga.Update,
             Permissions.Manga.Delete,
@@ -67,6 +74,8 @@ public static class RolePermissions
             Permissions.File.Upload,
             Permissions.File.Delete,
             Permissions.File.Process,
+            Permissions.Publication.Create,
+            Permissions.Publication.Submit,
             
             // Permisos adicionales de Moderator
             Permissions.Manga.Moderate,
@@ -75,7 +84,20 @@ public static class RolePermissions
             Permissions.Comment.Moderate,
             Permissions.User.Read,
             Permissions.User.Update, // Puede actualizar otros usuarios (limitado)
-            Permissions.User.Invite
+            Permissions.User.Invite,
+            
+            // Permisos de moderación para Moderator
+            Permissions.Publication.Review,
+            Permissions.Publication.Approve,
+            Permissions.Publication.Reject,
+            Permissions.Publication.Archive,
+            Permissions.Publication.ViewQueue,
+            Permissions.Publication.ViewAll,
+            Permissions.ContentReport.Review,
+            Permissions.ContentReport.ViewAll,
+            Permissions.ContentReport.Resolve,
+            Permissions.Moderation.ViewHistory,
+            Permissions.Moderation.ManageQueue
         },
         
         [UserRole.Administrator] = new[]
@@ -89,6 +111,7 @@ public static class RolePermissions
             Permissions.Comment.Create,
             Permissions.Comment.Read,
             Permissions.Comment.Update,
+            Permissions.ContentReport.Create,
             Permissions.Manga.Create,
             Permissions.Manga.Update,
             Permissions.Manga.Delete,
@@ -100,6 +123,8 @@ public static class RolePermissions
             Permissions.File.Upload,
             Permissions.File.Delete,
             Permissions.File.Process,
+            Permissions.Publication.Create,
+            Permissions.Publication.Submit,
             Permissions.Manga.Moderate,
             Permissions.Chapter.Moderate,
             Permissions.Comment.Delete,
@@ -107,6 +132,17 @@ public static class RolePermissions
             Permissions.User.Read,
             Permissions.User.Update,
             Permissions.User.Invite,
+            Permissions.Publication.Review,
+            Permissions.Publication.Approve,
+            Permissions.Publication.Reject,
+            Permissions.Publication.Archive,
+            Permissions.Publication.ViewQueue,
+            Permissions.Publication.ViewAll,
+            Permissions.ContentReport.Review,
+            Permissions.ContentReport.ViewAll,
+            Permissions.ContentReport.Resolve,
+            Permissions.Moderation.ViewHistory,
+            Permissions.Moderation.ManageQueue,
             
             // Permisos exclusivos de Administrator
             Permissions.Manga.ManageAll,
@@ -118,7 +154,10 @@ public static class RolePermissions
             Permissions.System.Audit,
             Permissions.System.Backup,
             Permissions.System.Monitor,
-            Permissions.System.Maintenance
+            Permissions.System.Maintenance,
+            Permissions.Publication.BulkActions,
+            Permissions.Moderation.ViewStatistics,
+            Permissions.Moderation.BulkActions
         }
     };
 
