@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mangalith.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigrationWithPublicationWorkflow : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,6 +26,26 @@ namespace Mangalith.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Permissions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemAlerts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Severity = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    Metadata = table.Column<string>(type: "jsonb", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    IsResolved = table.Column<bool>(type: "boolean", nullable: false),
+                    ResolvedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ResolvedBy = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemAlerts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -640,6 +660,26 @@ namespace Mangalith.Infrastructure.Migrations
                 column: "Role");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SystemAlerts_CreatedAt",
+                table: "SystemAlerts",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemAlerts_IsResolved",
+                table: "SystemAlerts",
+                column: "IsResolved");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemAlerts_Severity",
+                table: "SystemAlerts",
+                column: "Severity");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemAlerts_Type",
+                table: "SystemAlerts",
+                column: "Type");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserInvitations_AcceptedAtUtc",
                 table: "UserInvitations",
                 column: "AcceptedAtUtc");
@@ -722,6 +762,9 @@ namespace Mangalith.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "RolePermissions");
+
+            migrationBuilder.DropTable(
+                name: "SystemAlerts");
 
             migrationBuilder.DropTable(
                 name: "UserInvitations");

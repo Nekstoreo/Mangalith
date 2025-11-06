@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mangalith.Infrastructure.Migrations
 {
     [DbContext(typeof(MangalithDbContext))]
-    [Migration("20251017025235_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251106051239_InitialMigrationWithPublicationWorkflow")]
+    partial class InitialMigrationWithPublicationWorkflow
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -621,6 +621,60 @@ namespace Mangalith.Infrastructure.Migrations
                     b.HasIndex("Role");
 
                     b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("Mangalith.Domain.Entities.SystemAlert", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Metadata")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ResolvedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("IsResolved");
+
+                    b.HasIndex("Severity");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("SystemAlerts");
                 });
 
             modelBuilder.Entity("Mangalith.Domain.Entities.User", b =>
