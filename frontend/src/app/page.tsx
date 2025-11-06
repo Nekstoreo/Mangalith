@@ -130,6 +130,27 @@ export default function Home() {
           </Card>
         </div>
 
+        {/* Public Manga Section */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">Manga Disponible</h2>
+            <p className="text-muted-foreground">
+              Explora el contenido publicado por nuestra comunidad
+            </p>
+          </div>
+          <div className="text-center py-8 bg-muted/30 rounded-lg">
+            <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground mb-4">
+              El catálogo público estará disponible una vez que los usuarios empiecen a publicar contenido
+            </p>
+            <Link href="/search">
+              <Button variant="outline">
+                Explorar Catálogo
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         {/* CTA Section */}
         <div className="text-center">
           <div className="bg-muted/50 rounded-lg p-8 max-w-2xl mx-auto">
