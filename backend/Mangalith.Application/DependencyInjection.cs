@@ -31,7 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IMangaService, MangaService>();
         
         // Validation services
-        services.AddScoped<PublicationValidationService>();
+        services.AddScoped<IPublicationValidationService, PublicationValidationService>();
         
         // Servicios en segundo plano
         services.AddSingleton<BackgroundFileProcessorService>();
