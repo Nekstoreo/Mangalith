@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Mangalith.Application.Interfaces.Repositories;
 using Mangalith.Domain.Entities;
+using Mangalith.Domain.Enums;
 using Mangalith.Infrastructure.Data;
 
 namespace Mangalith.Infrastructure.Repositories;
@@ -19,6 +20,7 @@ public class MangaRepository : IMangaRepository
         return await _context.Mangas
             .Include(m => m.Chapters)
             .Include(m => m.Files)
+            .Include(m => m.Publication)
             .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
     }
 
@@ -26,6 +28,39 @@ public class MangaRepository : IMangaRepository
     {
         return await _context.Mangas
             .Include(m => m.Chapters)
+            .Include(m => m.Publication)
+            .OrderByDescending(m => m.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Manga>> GetPublicMangasAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Mangas
+            .Include(m => m.Chapters)
+            .Include(m => m.Publication)
+            .Where(m => m.Publication != null && m.Publication.Status == PublicationStatus.Published)
+            .OrderByDescending(m => m.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Manga>> SearchPublicMangasAsync(string searchTerm, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Mangas
+            .Include(m => m.Chapters)
+            .Include(m => m.Publication)
+            .Where(m => m.Publication != null && m.Publication.Status == PublicationStatus.Published);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var lowerSearchTerm = searchTerm.ToLower();
+            query = query.Where(m => 
+                m.Title.ToLower().Contains(lowerSearchTerm) ||
+                (m.AlternativeTitle != null && m.AlternativeTitle.ToLower().Contains(lowerSearchTerm)) ||
+                (m.Author != null && m.Author.ToLower().Contains(lowerSearchTerm)) ||
+                (m.Description != null && m.Description.ToLower().Contains(lowerSearchTerm)));
+        }
+
+        return await query
             .OrderByDescending(m => m.CreatedAtUtc)
             .ToListAsync(cancellationToken);
     }
@@ -35,6 +70,7 @@ public class MangaRepository : IMangaRepository
         return await _context.Mangas
             .Where(m => m.CreatedByUserId == userId)
             .Include(m => m.Chapters)
+            .Include(m => m.Publication)
             .OrderByDescending(m => m.CreatedAtUtc)
             .ToListAsync(cancellationToken);
     }

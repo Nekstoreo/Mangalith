@@ -61,6 +61,10 @@ public static class DependencyInjection
         services.AddScoped<IUserInvitationRepository, UserInvitationRepository>();
         services.AddScoped<IUserQuotaRepository, UserQuotaRepository>();
         services.AddScoped<IRateLimitRepository, RateLimitRepository>();
+        services.AddScoped<IPublicationRepository, PublicationRepository>();
+        services.AddScoped<IModerationActionRepository, ModerationActionRepository>();
+        services.AddScoped<IContentReportRepository, ContentReportRepository>();
+        services.AddScoped<ISystemAlertRepository, SystemAlertRepository>();
         
         // Mantener servicios existentes
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
