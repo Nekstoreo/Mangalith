@@ -1,0 +1,82 @@
+version: '3.9'
+
+services:
+  # PostgreSQL - Base de datos principal
+  postgres:
+    image: postgres:16-alpine
+    container_name: mangalith-postgres
+    environment:
+      POSTGRES_USER: mangalith_user
+      POSTGRES_PASSWORD: mangalith_password
+      POSTGRES_DB: mangalith_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mangalith_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mangalith-network
+
+  # Redis - Cache (para después, pero configurado ahora)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: mangalith-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - mangalith-network
+
+  # Backend Spring Boot (comentado para Fase 0, se descomenta cuando esté listo)
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/backend/Dockerfile
+  #   container_name: mangalith-backend
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mangalith_db
+  #     SPRING_DATASOURCE_USERNAME: mangalith_user
+  #     SPRING_DATASOURCE_PASSWORD: mangalith_password
+  #     SPRING_REDIS_HOST: redis
+  #     SPRING_REDIS_PORT: 6379
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - mangalith-network
+
+  # Frontend Next.js (comentado para Fase 0, se descomenta cuando esté listo)
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/frontend/Dockerfile
+  #   container_name: mangalith-frontend
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - mangalith-network
+
+volumes:
+  postgres_data:
+  # redis_data:
+
+networks:
+  mangalith-network:
+    driver: bridge
