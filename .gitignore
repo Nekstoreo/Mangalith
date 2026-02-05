@@ -109,3 +109,7 @@ build/
 coverage/   
 .nyc_output/
 htmlcov/
+
+# Agent
+.agent/
+.agents/
