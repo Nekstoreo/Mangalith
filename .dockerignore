@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+ROADMAP.md
+COMMIT_CONVENTION.md
+.env
+.env.local
+.next
+build
+dist
+target
+.idea
+.vscode
+.DS_Store
