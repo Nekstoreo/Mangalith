@@ -3,5 +3,5 @@
 
 CREATE SCHEMA IF NOT EXISTS mangalith;
 
--- Tables será creadas por Flyway migrations en el backend
+-- Tables serán creadas por Flyway migrations en el backend
 -- Este archivo es solo para setup inicial
