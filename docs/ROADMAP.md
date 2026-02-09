@@ -77,7 +77,7 @@ Este roadmap sigue principios pragmáticos:
   - [ ] Tests unitarios de casos de uso
   - [ ] Tests de integración con BD (TestContainers)
 - [ ] **Migración BD**
-  - [ ] Flyway: V2__create_series_chapter_page_tables.sql
+  - [ ] Flyway migration para crear tablas de Series, Chapter, Page
 
 **Criterios de Éxito**:
 - ✅ Puedo crear una serie vía Postman/cURL
