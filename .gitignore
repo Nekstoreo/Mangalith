@@ -113,3 +113,6 @@ htmlcov/
 # Agent
 .agent/
 .agents/
+
+# GitHub
+.github/
