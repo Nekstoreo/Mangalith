@@ -9,10 +9,10 @@
 <div align="center">
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Java](https://img.shields.io/badge/Java-21+-ED8B00?logo=java&logoColor=white)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![Next.js](https://img.shields.io/badge/Next.js-15+-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-11+-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16+-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17+-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
 </div>
@@ -31,10 +31,10 @@ El proyecto elimina las barreras que tradicionalmente han impedido que comunidad
 
 | Componente | Tecnología |
 |---|---|
-| Frontend | Next.js 15+ con TypeScript |
-| Backend | Spring Boot (Java 21+ LTS) |
-| Base de Datos | PostgreSQL 15+ |
-| ORM | Spring Data JPA / Hibernate |
+| Frontend | Next.js 16+ con TypeScript |
+| Backend | NestJS 11+ con TypeScript |
+| Base de Datos | PostgreSQL 17+ |
+| ORM | Prisma |
 | Contenedorización | Docker & Docker Compose |
 
 ---
@@ -63,9 +63,8 @@ Sistema de temas flexible que permite adaptar completamente la apariencia a tu m
 ### Requisitos Previos
 
 - Docker y Docker Compose
-- Java 21+ (si ejecutas sin contenedores)
-- Node.js 20+ (para desarrollo del frontend)
-- PostgreSQL 15+ (si ejecutas sin contenedores)
+- Node.js 22+ (si ejecutas sin contenedores)
+- PostgreSQL 17+ (si ejecutas sin contenedores)
 
 ### Instalación con Docker
 
@@ -88,7 +87,8 @@ Si prefieres ejecutar componentes localmente:
 **Backend:**
 ```bash
 cd backend
-./mvnw spring-boot:run
+npm install
+npm run start:dev
 ```
 
 **Frontend:**
@@ -143,7 +143,7 @@ cd Mangalith
 docker-compose -f docker-compose.dev.yml up -d
 
 # Backend
-cd backend && ./mvnw clean install
+cd backend && npm install && npm run start:dev
 
 # Frontend
 cd ../frontend && npm install
@@ -155,7 +155,7 @@ cd ../frontend && npm install
 
 La plataforma está dividida en tres componentes principales:
 
-**Backend API** — API REST construida con Spring Boot que gestiona la lógica de negocio, base de datos y autenticación.
+**Backend API** — API REST construida con NestJS que gestiona la lógica de negocio, base de datos y autenticación. Documentación interactiva disponible en `/api/docs`.
 
 **Frontend** — Aplicación de Next.js que proporciona la interfaz de usuario tanto para lectores como para administradores.
 
