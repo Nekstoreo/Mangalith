@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  # PostgreSQL - Base de datos principal
+  postgres:
+    image: postgres:17.7-alpine
+    container_name: mangalith-postgres
+    environment:
+      POSTGRES_USER: mangalith_user
+      POSTGRES_PASSWORD: mangalith_password
+      POSTGRES_DB: mangalith_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mangalith_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mangalith-network
+
+  # Backend NestJS
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: mangalith-backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://mangalith_user:mangalith_password@postgres:5432/mangalith_db
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRATION: 7d
+      PORT: 3001
+      UPLOAD_DIR: uploads
+      CORS_ORIGIN: "*"
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - mangalith-network
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    container_name: mangalith-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001/api
+    depends_on:
+      - backend
+    networks:
+      - mangalith-network
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  mangalith-network:
+    driver: bridge
