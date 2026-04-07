@@ -109,3 +109,12 @@ build/
 coverage/   
 .nyc_output/
 htmlcov/
+
+# Agent instructions / SDD artifacts
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.github/CLAUDE.md
+.github/GEMINI.md
+.github/copilot-instructions.md
+.atl/
